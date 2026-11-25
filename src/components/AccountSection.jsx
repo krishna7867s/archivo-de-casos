@@ -229,7 +229,10 @@ export default function AccountSection() {
               </div>
               <span className="vault-role mono">{roleName[profile.role]}</span>
               <h3>{profile.name}</h3>
-              <strong className="vault-talent">{profile.talent}</strong>
+              <div className="vault-talent-field">
+                <span className="mono">Talento asignado</span>
+                <strong className="vault-talent"><BadgeCheck size={17} aria-hidden="true" /> {profile.talent}</strong>
+              </div>
             </div>
             <div className="vault-identity-footer">
               <p>Teléfono <span className="mono">{profile.phone}</span></p>

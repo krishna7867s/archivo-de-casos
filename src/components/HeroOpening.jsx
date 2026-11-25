@@ -152,6 +152,7 @@ export default function HeroOpening({
         <div className="hero-center-grid">
           {/* ~3/5 del espacio: arte con marco oblicuo y mancha rosa gráfica detrás de una esquina */}
           <div className="hero-artwork-column">
+            <span className="hero-frame-notch" aria-hidden="true" />
             <svg
               className="hero-pink-splatter-bg"
               viewBox="0 0 220 180"

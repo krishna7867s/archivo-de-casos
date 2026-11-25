@@ -185,7 +185,9 @@ export default function EvidenceBoard({
             {/* Ficha protagonista estilo Report Card escolar de Danganronpa */}
             {activePerson && (
               <article
-                className="cast-protagonist-card report-card-shell" style={{ '--portrait-accent': themeAccent }}
+                className="cast-protagonist-card report-card-shell"
+                data-obra={obraSlug}
+                style={{ '--portrait-accent': themeAccent }}
                 aria-live="polite"
                 aria-label="Personaje seleccionado"
               >
@@ -201,7 +203,7 @@ export default function EvidenceBoard({
                 )}
 
                 <div className="report-card-bar">
-                  <span className="mono">REPORT CARD</span>
+                  <span className="mono">Report Card</span>
                   <span className="mono">
                     NO. {String(activeIndex + 1).padStart(2, '0')} /{' '}
                     {String(filteredPersonajes.length).padStart(2, '0')}

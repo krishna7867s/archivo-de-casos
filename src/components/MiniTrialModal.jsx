@@ -214,7 +214,7 @@ export default function MiniTrialModal({ recomendaciones, onClose }) {
         <div className="tribunal-podium-lines" />
       </div>
 
-      <div className="minitrial-shell">
+      <div className="minitrial-shell" data-plane={phase === 'impact' ? 'impacto' : 'testimonio'}>
         <div className="minitrial-topbar">
           <div
             className="minitrial-case-switcher"
@@ -251,7 +251,7 @@ export default function MiniTrialModal({ recomendaciones, onClose }) {
             <>
               <div className="minitrial-eyebrow mono">
                 <span id="minitrial-heading">TRIBUNAL · PRESENTÁ LA CONTRADICCIÓN</span>
-                <span>{currentCase.speaker}</span>
+                <span className="minitrial-speaker">{currentCase.speaker}</span>
               </div>
 
               <div
