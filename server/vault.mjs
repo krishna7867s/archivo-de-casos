@@ -21,11 +21,11 @@ async function verifyPassword(password, stored) {
   return timingSafeEqual(Buffer.from(stored), Buffer.from(await hashPassword(password, salt)));
 }
 
-const emailSchema = z.email().max(254).transform((value) => value.toLowerCase());
+const emailSchema = z.string().trim().pipe(z.email().max(254)).transform((value) => value.toLowerCase());
 const passwordSchema = z.string().min(12).max(128)
   .regex(/[a-z]/).regex(/[A-Z]/).regex(/[0-9]/).regex(/[^a-zA-Z0-9]/);
 const registerSchema = z.object({
-  email: z.preprocess((value) => typeof value === 'string' ? value.trim() : value, emailSchema),
+  email: emailSchema,
   name: z.string().trim().min(2).max(100),
   password: passwordSchema,
   phone: z.string().trim().max(32)
@@ -38,9 +38,10 @@ const resetSchema = z.object({ token: z.string().regex(/^[\w-]{43}$/), password:
 const roleSchema = z.object({ role: z.enum(['usuario', 'administrador']) });
 
 class RequestError extends Error {
-  constructor(status, message) {
+  constructor(status, message, retryAfter) {
     super(message);
     this.status = status;
+    this.retryAfter = retryAfter;
   }
 }
 
@@ -144,11 +145,13 @@ export async function createVault({ filename, key, origin, allowedOrigins = [ori
     const now = Date.now();
     run('DELETE FROM limits WHERE expires <= ?', now);
     const row = get(`INSERT INTO limits(bucket,count,expires) VALUES (?,1,?)
-      ON CONFLICT(bucket) DO UPDATE SET count = MIN(count + 1, ?) RETURNING count`,
+      ON CONFLICT(bucket) DO UPDATE SET count = MIN(count + 1, ?) RETURNING count, expires`,
       bucket, now + duration, maximum + 2);
     if (row.count > maximum) {
       if (alert && row.count === maximum + 1) event('alerta_login');
-      throw new RequestError(429, 'Demasiados intentos. Probá más tarde.');
+      const seconds = Math.max(1, Math.ceil((row.expires - now) / 1000));
+      const minutes = Math.ceil(seconds / 60);
+      throw new RequestError(429, `Demasiados intentos. Volvé a intentar en ${minutes} ${minutes === 1 ? 'minuto' : 'minutos'}.`, seconds);
     }
   }
 
@@ -378,7 +381,10 @@ export async function createVault({ filename, key, origin, allowedOrigins = [ori
 
   const handleError = (error, _req, res, next) => {
     if (res.headersSent) return next(error);
-    if (error instanceof RequestError) return res.status(error.status).json({ error: error.message });
+    if (error instanceof RequestError) {
+      if (error.retryAfter) res.set('Retry-After', String(error.retryAfter));
+      return res.status(error.status).json({ error: error.message });
+    }
     if (error.type === 'entity.parse.failed' || error.type === 'entity.too.large') {
       return res.status(error.status).json({ error: 'Solicitud inválida.' });
     }
