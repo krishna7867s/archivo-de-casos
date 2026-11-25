@@ -148,21 +148,21 @@ export default function AccountSection() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
-  const [opened, setOpened] = useState(Boolean(token));
+  const [loadingProfile, setLoadingProfile] = useState(!token);
 
   useEffect(() => {
     const controller = new AbortController();
     if (token) {
       history.replaceState(history.state, '', '#mi-expediente');
       document.getElementById('mi-expediente')?.scrollIntoView();
-    } else if (opened) {
+    } else {
       request('/profile', 'GET', undefined, controller.signal)
         .then((data) => setProfile(data.profile), (failure) => {
           if (!controller.signal.aborted && failure.status !== 401) setError(failure.message);
-        });
+        }).finally(() => { if (!controller.signal.aborted) setLoadingProfile(false); });
     }
     return () => controller.abort();
-  }, [opened, token]);
+  }, [token]);
 
   async function submit(event) {
     event.preventDefault();
@@ -200,7 +200,7 @@ export default function AccountSection() {
       <h2 className="section-title" id="vault-heading">Mi expediente</h2>
       {error && <p className="vault-feedback" role="alert">{error}</p>}
       {notice && <p className="vault-feedback" role="status">{notice}</p>}
-      {!opened ? <button className="btn-stage-primary" onClick={() => setOpened(true)}>Abrir mi expediente</button> : profile ? <>
+      {loadingProfile ? <p role="status">Cargando expediente…</p> : profile ? <>
         <div className="vault-columns">
           <div className="vault-panel">
             <div className={`vault-badge ${reveal ? 'is-revealing' : ''}`} onAnimationEnd={(e) => {

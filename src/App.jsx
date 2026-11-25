@@ -17,6 +17,21 @@ import MiniTrialModal from './components/MiniTrialModal.jsx';
 
 const CAST_GAME_SLUGS = ['dr1', 'dr2', 'v3', 'udg'];
 
+const NAV_ITEMS = [
+  ['obras', 'Obras'],
+  ['personajes', 'Personajes'],
+  ['recomendaciones', 'Recomendaciones'],
+  ['mi-expediente', 'Mi expediente'],
+];
+
+function readSection() {
+  const { hash } = window.location;
+  if (hash.startsWith('#recuperar=')) return 'mi-expediente';
+  if (hash.startsWith('#expediente-')) return window.history.state?.section || 'obras';
+  const section = hash.slice(1);
+  return NAV_ITEMS.some(([id]) => id === section) ? section : 'top';
+}
+
 export default function App() {
   // Datos desde Supabase
   const [obras, setObras] = useState([]);
@@ -33,7 +48,7 @@ export default function App() {
   const [recsError, setRecsError] = useState(null);
 
   // Navegación activa + control de sonido (inicia en silencio)
-  const [activeSection, setActiveSection] = useState('obras');
+  const [activeSection, setActiveSection] = useState(readSection);
   const [soundEnabled, setSoundEnabled] = useState(false);
   const [soundVolume, setSoundVolume] = useState(() => audioEngine.volume);
 
@@ -59,27 +74,19 @@ export default function App() {
   const lastTriggerElRef = useRef(null);
   const pushedHistoryRef = useRef(false);
 
-  // Seguir la sección visible para marcarla con una línea rosa corta en el menú
   useEffect(() => {
-    const ids = ['obras', 'personajes', 'recomendaciones'];
-    const els = ids.map((id) => document.getElementById(id)).filter(Boolean);
-    if (els.length === 0 || typeof IntersectionObserver === 'undefined') return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-        if (visible[0]?.target?.id) {
-          setActiveSection(visible[0].target.id);
-        }
-      },
-      { rootMargin: '-25% 0px -55% 0px', threshold: [0.1, 0.35] }
-    );
-
-    els.forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
+    const syncSection = () => setActiveSection(readSection());
+    window.addEventListener('hashchange', syncSection);
+    window.addEventListener('popstate', syncSection);
+    return () => {
+      window.removeEventListener('hashchange', syncSection);
+      window.removeEventListener('popstate', syncSection);
+    };
   }, []);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [activeSection]);
 
   const handleToggleSound = () => {
     const next = !soundEnabled;
@@ -203,7 +210,7 @@ export default function App() {
 
       if (!pushedHistoryRef.current) {
         window.history.pushState(
-          { expediente: obra.slug },
+          { expediente: obra.slug, section: activeSection },
           '',
           `#expediente-${obra.slug}`
         );
@@ -220,7 +227,7 @@ export default function App() {
         loadDossierCast(obra.slug);
       }
     },
-    [castBySlug, loadDossierCast]
+    [activeSection, castBySlug, loadDossierCast]
   );
 
   const closeDossierImmediate = useCallback(() => {
@@ -247,9 +254,9 @@ export default function App() {
       window.history.replaceState(null, '', '#personajes');
     }
     setActiveObra(null);
+    setActiveSection('personajes');
     window.requestAnimationFrame(() => {
-      const sectionEl = document.getElementById('personajes');
-      sectionEl?.scrollIntoView({ behavior: 'smooth' });
+      document.getElementById('top')?.focus({ preventScroll: true });
     });
   }, []);
 
@@ -269,31 +276,22 @@ export default function App() {
       <div className="app-shell">
         <header className="site-header">
           <div className="container header-inner">
-            <a href="#top" className="brand-mark">
+            <a href="#top" className="brand-mark" aria-current={activeSection === 'top' ? 'page' : undefined}>
               <span className="brand-dot" aria-hidden="true" />
               <span className="brand-title">Archivo de casos</span>
             </a>
 
             <nav className="site-nav" aria-label="Navegación principal">
-              <a
-                href="#obras"
-                className={`nav-link ${activeSection === 'obras' ? 'is-current' : ''}`}
-              >
-                Obras
-              </a>
-              <a
-                href="#personajes"
-                className={`nav-link ${activeSection === 'personajes' ? 'is-current' : ''}`}
-              >
-                Personajes
-              </a>
-              <a
-                href="#recomendaciones"
-                className={`nav-link ${activeSection === 'recomendaciones' ? 'is-current' : ''}`}
-              >
-                Recomendaciones
-              </a>
-              <a className="nav-link" href="#mi-expediente">Mi expediente</a>
+              {NAV_ITEMS.map(([id, label]) => (
+                <a
+                  key={id}
+                  href={`#${id}`}
+                  className={`nav-link ${activeSection === id ? 'is-current' : ''}`}
+                  aria-current={activeSection === id ? 'page' : undefined}
+                >
+                  {label}
+                </a>
+              ))}
             </nav>
 
             <div className="audio-controls" aria-label="Control de sonido">
@@ -330,117 +328,127 @@ export default function App() {
           </div>
         </header>
 
-        <main id="top">
-          <HeroOpening
-            obras={obras}
-            loading={obrasLoading}
-            activeSlug={heroActiveSlug}
-            onChangeActiveSlug={setHeroActiveSlug}
-            onOpenObra={handleOpenObra}
-            activeSharedCoverId={activeSharedCoverId}
-          />
+        <main id="top" tabIndex={-1}>
+          {activeSection === 'top' && (
+            <HeroOpening
+              obras={obras}
+              loading={obrasLoading}
+              activeSlug={heroActiveSlug}
+              onChangeActiveSlug={setHeroActiveSlug}
+              onOpenObra={handleOpenObra}
+              activeSharedCoverId={activeSharedCoverId}
+            />
+          )}
 
-          <CatalogSection
-            obras={obras}
-            loading={obrasLoading}
-            error={obrasError}
-            onRetry={loadObras}
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-            selectedTipo={selectedTipo}
-            onTipoChange={setSelectedTipo}
-            selectedPlatform={selectedPlatform}
-            onPlatformChange={setSelectedPlatform}
-            onSelectObra={handleOpenObra}
-            activeSharedCoverId={activeSharedCoverId}
-          />
+          {activeSection === 'obras' && (
+            <CatalogSection
+              obras={obras}
+              loading={obrasLoading}
+              error={obrasError}
+              onRetry={loadObras}
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              selectedTipo={selectedTipo}
+              onTipoChange={setSelectedTipo}
+              selectedPlatform={selectedPlatform}
+              onPlatformChange={setSelectedPlatform}
+              onSelectObra={handleOpenObra}
+              activeSharedCoverId={activeSharedCoverId}
+            />
+          )}
 
-          <section
-            id="personajes"
-            className="section-block cast-section"
-            aria-labelledby="personajes-heading"
-          >
-            <div className="container">
-              <div className="recs-header">
-                <h2 id="personajes-heading" className="section-title">
-                  Personajes
-                </h2>
-                <p className="section-subtitle">
-                  Elegí una entrega y buscá por nombre o talento para consultar
-                  cada ficha sin spoilers.
-                </p>
-              </div>
-
-              {obrasConReparto.length > 0 && (
-                <div
-                  className="cast-tabs-row"
-                  role="tablist"
-                  aria-label="Seleccionar entrega para ver su reparto"
-                >
-                  {obrasConReparto.map((obra) => {
-                    const isActive = obra.slug === castObraSlug;
-                    return (
-                      <button
-                        key={obra.slug}
-                        type="button"
-                        role="tab"
-                        aria-selected={isActive}
-                        className={`cat-pill ${isActive ? 'is-active' : ''}`}
-                        onClick={() => {
-                          audioEngine.playSelectClick();
-                          setCastObraSlug(obra.slug);
-                        }}
-                      >
-                        {obra.titulo}
-                      </button>
-                    );
-                  })}
+          {activeSection === 'personajes' && (
+            <section
+              id="personajes"
+              className="section-block cast-section"
+              aria-labelledby="personajes-heading"
+            >
+              <div className="container">
+                <div className="recs-header">
+                  <h2 id="personajes-heading" className="section-title">
+                    Personajes
+                  </h2>
+                  <p className="section-subtitle">
+                    Elegí una entrega y buscá por nombre o talento para consultar
+                    cada ficha sin spoilers.
+                  </p>
                 </div>
-              )}
 
-              {castError && (
-                <div className="error-panel" role="alert">
-                  <div>
-                    <h3 className="error-panel-title">
-                      No se pudo cargar el reparto
-                    </h3>
-                    <p className="error-panel-msg">{castError}</p>
-                  </div>
-                  <button
-                    type="button"
-                    className="btn-stage-primary"
-                    onClick={() => loadCastForSlug(castObraSlug)}
+                {obrasConReparto.length > 0 && (
+                  <div
+                    className="cast-tabs-row"
+                    role="tablist"
+                    aria-label="Seleccionar entrega para ver su reparto"
                   >
-                    <RotateCcw size={15} aria-hidden="true" />
-                    <span>Reintentar</span>
-                  </button>
-                </div>
-              )}
+                    {obrasConReparto.map((obra) => {
+                      const isActive = obra.slug === castObraSlug;
+                      return (
+                        <button
+                          key={obra.slug}
+                          type="button"
+                          role="tab"
+                          aria-selected={isActive}
+                          className={`cat-pill ${isActive ? 'is-active' : ''}`}
+                          onClick={() => {
+                            audioEngine.playSelectClick();
+                            setCastObraSlug(obra.slug);
+                          }}
+                        >
+                          {obra.titulo}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
 
-              {castLoading && !castError && (
-                <div className="skeleton-card is-wide-skeleton" aria-busy="true" />
-              )}
+                {castError && (
+                  <div className="error-panel" role="alert">
+                    <div>
+                      <h3 className="error-panel-title">
+                        No se pudo cargar el reparto
+                      </h3>
+                      <p className="error-panel-msg">{castError}</p>
+                    </div>
+                    <button
+                      type="button"
+                      className="btn-stage-primary"
+                      onClick={() => loadCastForSlug(castObraSlug)}
+                    >
+                      <RotateCcw size={15} aria-hidden="true" />
+                      <span>Reintentar</span>
+                    </button>
+                  </div>
+                )}
 
-              {!castLoading && !castError && currentCastList.length > 0 && (
-                <EvidenceBoard
-                  personajes={currentCastList}
-                  obraTitulo={currentCastObra?.titulo}
-                  obraSlug={castObraSlug}
-                  boardId={`cast-${castObraSlug}`}
-                  showSearch
-                />
-              )}
-            </div>
-          </section>
+                {castLoading && !castError && (
+                  <div className="skeleton-card is-wide-skeleton" aria-busy="true" />
+                )}
 
-          <TrialRecommendations
-            recomendaciones={recomendaciones}
-            loading={recsLoading}
-            error={recsError}
-            onRetry={loadRecomendaciones}
-            onOpenMiniTrial={() => setMiniTrialOpen(true)}
-          />
-          <AccountSection />
+                {!castLoading && !castError && currentCastList.length > 0 && (
+                  <EvidenceBoard
+                    personajes={currentCastList}
+                    obraTitulo={currentCastObra?.titulo}
+                    obraSlug={castObraSlug}
+                    boardId={`cast-${castObraSlug}`}
+                    showSearch
+                  />
+                )}
+              </div>
+            </section>
+          )}
+
+          {activeSection === 'recomendaciones' && (
+            <TrialRecommendations
+              recomendaciones={recomendaciones}
+              loading={recsLoading}
+              error={recsError}
+              onRetry={loadRecomendaciones}
+              onOpenMiniTrial={() => setMiniTrialOpen(true)}
+            />
+          )}
+          {activeSection === 'mi-expediente' && (
+            <AccountSection />
+          )}
         </main>
 
         <footer className="site-footer">
