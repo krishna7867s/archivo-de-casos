@@ -53,6 +53,8 @@ export default function App() {
   const [activeSection, setActiveSection] = useState(readSection);
   const [soundEnabled, setSoundEnabled] = useState(false);
   const [soundVolume, setSoundVolume] = useState(() => audioEngine.volume);
+  const [soundStarting, setSoundStarting] = useState(false);
+  const [soundError, setSoundError] = useState('');
 
   // Caso activo en portada
   const [heroActiveSlug, setHeroActiveSlug] = useState('dr1');
@@ -91,21 +93,27 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [activeSection]);
 
-  const handleToggleSound = () => {
-    const next = !soundEnabled;
-    setSoundEnabled(next);
-    audioEngine.setEnabled(next);
-    if (next) audioEngine.playSelectClick();
+  const changeSound = async (enabled) => {
+    setSoundStarting(true);
+    setSoundError('');
+    try {
+      setSoundEnabled(await audioEngine.setEnabled(enabled));
+      setSoundVolume(audioEngine.volume);
+      if (enabled) audioEngine.playSelectClick();
+    } catch {
+      await audioEngine.setEnabled(false);
+      setSoundEnabled(false);
+      setSoundError('El navegador no pudo iniciar el sonido.');
+    } finally {
+      setSoundStarting(false);
+    }
   };
 
   const handleVolumeChange = (e) => {
     const nextVol = Number(e.target.value);
     setSoundVolume(nextVol);
     audioEngine.setVolume(nextVol);
-    if (nextVol > 0 && !soundEnabled) {
-      setSoundEnabled(true);
-      audioEngine.setEnabled(true);
-    }
+    if ((nextVol > 0) !== soundEnabled) void changeSound(nextVol > 0);
   };
 
   const loadObras = useCallback(async () => {
@@ -297,7 +305,8 @@ export default function App() {
                 className={`audio-toggle-btn ${soundEnabled ? 'is-on' : ''}`}
                 aria-pressed={soundEnabled}
                 aria-label={soundEnabled ? 'Silenciar sonido' : 'Activar sonido'}
-                onClick={handleToggleSound}
+                onClick={() => changeSound(!soundEnabled)}
+                disabled={soundStarting}
               >
                 {soundEnabled ? (
                   <Volume2 size={15} aria-hidden="true" />
@@ -318,9 +327,11 @@ export default function App() {
                 step="0.05"
                 value={soundVolume}
                 onChange={handleVolumeChange}
+                disabled={soundStarting}
                 className="audio-volume-slider"
                 aria-label="Volumen"
               />
+              {soundError && <span role="status">{soundError}</span>}
             </div>
           </div>
         </header>

@@ -158,7 +158,7 @@ export default function MiniTrialModal({ recomendaciones, onClose }) {
     setCaseIndex(idx);
     setSelectedEvidenceId(MINITRIAL_CASES[idx].evidences[0].id);
     setPhase('idle');
-    audioEngine.setScene('tribunal');
+    audioEngine.setScene('tribunal', { restart: true });
   };
 
   const handlePresent = (evidenceOverride) => {

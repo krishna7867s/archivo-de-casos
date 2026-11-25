@@ -9,6 +9,7 @@
 
 const STORAGE_ENABLED_KEY = 'dr_archivo_audio_enabled_v1';
 const STORAGE_VOLUME_KEY = 'dr_archivo_audio_volume_v1';
+const DEFAULT_VOLUME = 0.45;
 
 // Opcional: si se alojan pistas autorizadas en Supabase Storage, se pueden declarar aquí.
 const STORAGE_TRACKS = {
@@ -21,7 +22,7 @@ class ArchivoAudioEngine {
     this.ctx = null;
     this.masterGain = null;
     this.enabled = false;
-    this.volume = 0.45;
+    this.volume = DEFAULT_VOLUME;
     this.scene = 'explore'; // 'explore' | 'tribunal'
     this.loopTimer = null;
     this.activeNodes = new Set();
@@ -32,8 +33,9 @@ class ArchivoAudioEngine {
   loadPreferences() {
     if (typeof window === 'undefined') return;
     try {
-      const savedVol = Number(window.localStorage.getItem(STORAGE_VOLUME_KEY));
-      if (!Number.isNaN(savedVol) && savedVol >= 0 && savedVol <= 1) {
+      const saved = window.localStorage.getItem(STORAGE_VOLUME_KEY);
+      const savedVol = Number(saved);
+      if (saved?.trim() && savedVol >= 0 && savedVol <= 1) {
         this.volume = savedVol;
       }
       // Siempre inicia en silencio al cargar la página para respetar al usuario y al navegador,
@@ -65,28 +67,31 @@ class ArchivoAudioEngine {
       this.masterGain.gain.value = this.enabled ? this.volume : 0;
       this.masterGain.connect(this.ctx.destination);
     }
-    if (this.ctx.state === 'suspended') {
-      this.ctx.resume().catch(() => {});
-    }
     return this.ctx;
   }
 
-  setEnabled(nextEnabled) {
-    this.enabled = Boolean(nextEnabled);
-    this.savePreferences();
-
-    if (!this.enabled) {
+  async setEnabled(nextEnabled) {
+    if (!nextEnabled) {
+      this.enabled = false;
       this.stopAllMusic();
       if (this.masterGain && this.ctx) {
         this.masterGain.gain.setTargetAtTime(0, this.ctx.currentTime, 0.04);
       }
-      return;
+      this.savePreferences();
+      return false;
     }
 
     const ctx = this.ensureContext();
-    if (!ctx || !this.masterGain) return;
+    if (!ctx || !this.masterGain) throw new Error('Audio no disponible');
+    if (ctx.state !== 'running') await ctx.resume();
+    if (ctx.state !== 'running') throw new Error('Audio no disponible');
+    if (this.volume === 0) this.volume = DEFAULT_VOLUME;
+    this.enabled = true;
+    this.savePreferences();
+    this.stopAllMusic();
     this.masterGain.gain.setTargetAtTime(this.volume, ctx.currentTime, 0.08);
     this.startSceneLoop(this.scene);
+    return true;
   }
 
   setVolume(nextVol) {
@@ -102,8 +107,8 @@ class ArchivoAudioEngine {
     });
   }
 
-  setScene(nextScene) {
-    if (this.scene === nextScene) return;
+  setScene(nextScene, { restart = false } = {}) {
+    if (this.scene === nextScene && !restart) return;
     this.scene = nextScene;
     if (!this.enabled) return;
     this.stopAllMusic();
