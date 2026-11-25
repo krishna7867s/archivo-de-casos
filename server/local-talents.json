@@ -1,0 +1,602 @@
+[
+  {
+    "talento_id": "1",
+    "nombre": "Programador definitivo"
+  },
+  {
+    "talento_id": "2",
+    "nombre": "Talento definitivo en robótica"
+  },
+  {
+    "talento_id": "3",
+    "nombre": "Talento definitivo en diseño de videojuegos"
+  },
+  {
+    "talento_id": "4",
+    "nombre": "Talento definitivo en desarrollo web"
+  },
+  {
+    "talento_id": "5",
+    "nombre": "Talento definitivo en electrónica"
+  },
+  {
+    "talento_id": "6",
+    "nombre": "Talento definitivo en inteligencia artificial"
+  },
+  {
+    "talento_id": "7",
+    "nombre": "Talento definitivo en análisis de datos"
+  },
+  {
+    "talento_id": "8",
+    "nombre": "Talento definitivo en redes informáticas"
+  },
+  {
+    "talento_id": "9",
+    "nombre": "Talento definitivo en animación 3d"
+  },
+  {
+    "talento_id": "10",
+    "nombre": "Talento definitivo en diseño de interfaces"
+  },
+  {
+    "talento_id": "11",
+    "nombre": "Talento definitivo en impresión 3d"
+  },
+  {
+    "talento_id": "12",
+    "nombre": "Talento definitivo en automatización"
+  },
+  {
+    "talento_id": "13",
+    "nombre": "Talento definitivo en computación gráfica"
+  },
+  {
+    "talento_id": "14",
+    "nombre": "Talento definitivo en reparación de consolas"
+  },
+  {
+    "talento_id": "15",
+    "nombre": "Talento definitivo en composición chiptune"
+  },
+  {
+    "talento_id": "16",
+    "nombre": "Pintor definitivo"
+  },
+  {
+    "talento_id": "17",
+    "nombre": "Talento definitivo en ilustración"
+  },
+  {
+    "talento_id": "18",
+    "nombre": "Talento definitivo en escultura"
+  },
+  {
+    "talento_id": "19",
+    "nombre": "Fotógrafo definitivo"
+  },
+  {
+    "talento_id": "20",
+    "nombre": "Talento definitivo en caligrafía"
+  },
+  {
+    "talento_id": "21",
+    "nombre": "Talento definitivo en diseño de vestuario"
+  },
+  {
+    "talento_id": "22",
+    "nombre": "Talento definitivo en diseño de carteles"
+  },
+  {
+    "talento_id": "23",
+    "nombre": "Talento definitivo en grabado"
+  },
+  {
+    "talento_id": "24",
+    "nombre": "Talento definitivo en cerámica"
+  },
+  {
+    "talento_id": "25",
+    "nombre": "Talento definitivo en tatuaje"
+  },
+  {
+    "talento_id": "26",
+    "nombre": "Talento definitivo en arte del origami"
+  },
+  {
+    "talento_id": "27",
+    "nombre": "Talento definitivo en diseño de tipografías"
+  },
+  {
+    "talento_id": "28",
+    "nombre": "Talento definitivo en collage"
+  },
+  {
+    "talento_id": "29",
+    "nombre": "Talento definitivo en cosplay"
+  },
+  {
+    "talento_id": "30",
+    "nombre": "Talento definitivo en maquillaje escénico"
+  },
+  {
+    "talento_id": "31",
+    "nombre": "Talento definitivo en deducción"
+  },
+  {
+    "talento_id": "32",
+    "nombre": "Talento definitivo en criminología"
+  },
+  {
+    "talento_id": "33",
+    "nombre": "Talento definitivo en archivística"
+  },
+  {
+    "talento_id": "34",
+    "nombre": "Talento definitivo en criptografía"
+  },
+  {
+    "talento_id": "35",
+    "nombre": "Talento definitivo en lingüística"
+  },
+  {
+    "talento_id": "36",
+    "nombre": "Talento definitivo en arqueología"
+  },
+  {
+    "talento_id": "37",
+    "nombre": "Talento definitivo en historia oral"
+  },
+  {
+    "talento_id": "38",
+    "nombre": "Talento definitivo en cartografía"
+  },
+  {
+    "talento_id": "39",
+    "nombre": "Talento definitivo en paleografía"
+  },
+  {
+    "talento_id": "40",
+    "nombre": "Talento definitivo en genealogía"
+  },
+  {
+    "talento_id": "41",
+    "nombre": "Talento definitivo en restauración documental"
+  },
+  {
+    "talento_id": "42",
+    "nombre": "Talento definitivo en reconstrucción de escenas"
+  },
+  {
+    "talento_id": "43",
+    "nombre": "Talento definitivo en periodismo de investigación"
+  },
+  {
+    "talento_id": "44",
+    "nombre": "Talento definitivo en análisis de testimonios"
+  },
+  {
+    "talento_id": "45",
+    "nombre": "Talento definitivo en descifrado de acertijos"
+  },
+  {
+    "talento_id": "46",
+    "nombre": "Talento definitivo en actuación"
+  },
+  {
+    "talento_id": "47",
+    "nombre": "Talento definitivo en ilusionismo"
+  },
+  {
+    "talento_id": "48",
+    "nombre": "Talento definitivo en danza contemporánea"
+  },
+  {
+    "talento_id": "49",
+    "nombre": "Talento definitivo en ballet"
+  },
+  {
+    "talento_id": "50",
+    "nombre": "Talento definitivo en canto"
+  },
+  {
+    "talento_id": "51",
+    "nombre": "Talento definitivo en dirección teatral"
+  },
+  {
+    "talento_id": "52",
+    "nombre": "Talento definitivo en improvisación"
+  },
+  {
+    "talento_id": "53",
+    "nombre": "Talento definitivo en ventriloquía"
+  },
+  {
+    "talento_id": "54",
+    "nombre": "Talento definitivo en acrobacia"
+  },
+  {
+    "talento_id": "55",
+    "nombre": "Talento definitivo en doblaje"
+  },
+  {
+    "talento_id": "56",
+    "nombre": "Talento definitivo en comedia"
+  },
+  {
+    "talento_id": "57",
+    "nombre": "Talento definitivo en coreografía"
+  },
+  {
+    "talento_id": "58",
+    "nombre": "Talento definitivo en teatro de sombras"
+  },
+  {
+    "talento_id": "59",
+    "nombre": "Talento definitivo en narración oral"
+  },
+  {
+    "talento_id": "60",
+    "nombre": "Talento definitivo en puesta en escena"
+  },
+  {
+    "talento_id": "61",
+    "nombre": "Talento definitivo en composición musical"
+  },
+  {
+    "talento_id": "62",
+    "nombre": "Talento definitivo en percusión"
+  },
+  {
+    "talento_id": "63",
+    "nombre": "Talento definitivo en piano"
+  },
+  {
+    "talento_id": "64",
+    "nombre": "Talento definitivo en guitarra"
+  },
+  {
+    "talento_id": "65",
+    "nombre": "Talento definitivo en violín"
+  },
+  {
+    "talento_id": "66",
+    "nombre": "Talento definitivo en bajo eléctrico"
+  },
+  {
+    "talento_id": "67",
+    "nombre": "Talento definitivo en producción musical"
+  },
+  {
+    "talento_id": "68",
+    "nombre": "Talento definitivo en ingeniería de sonido"
+  },
+  {
+    "talento_id": "69",
+    "nombre": "Talento definitivo en canto coral"
+  },
+  {
+    "talento_id": "70",
+    "nombre": "Talento definitivo en dirección de orquesta"
+  },
+  {
+    "talento_id": "71",
+    "nombre": "Talento definitivo en beatbox"
+  },
+  {
+    "talento_id": "72",
+    "nombre": "Talento definitivo en diseño sonoro"
+  },
+  {
+    "talento_id": "73",
+    "nombre": "Talento definitivo en restauración de vinilos"
+  },
+  {
+    "talento_id": "74",
+    "nombre": "Talento definitivo en mezcla de dj"
+  },
+  {
+    "talento_id": "75",
+    "nombre": "Talento definitivo en grabación de campo"
+  },
+  {
+    "talento_id": "76",
+    "nombre": "Talento definitivo en astronomía"
+  },
+  {
+    "talento_id": "77",
+    "nombre": "Talento definitivo en botánica"
+  },
+  {
+    "talento_id": "78",
+    "nombre": "Talento definitivo en entomología"
+  },
+  {
+    "talento_id": "79",
+    "nombre": "Talento definitivo en química"
+  },
+  {
+    "talento_id": "80",
+    "nombre": "Talento definitivo en meteorología"
+  },
+  {
+    "talento_id": "81",
+    "nombre": "Talento definitivo en geología"
+  },
+  {
+    "talento_id": "82",
+    "nombre": "Talento definitivo en paleontología"
+  },
+  {
+    "talento_id": "83",
+    "nombre": "Talento definitivo en oceanografía"
+  },
+  {
+    "talento_id": "84",
+    "nombre": "Talento definitivo en microscopía"
+  },
+  {
+    "talento_id": "85",
+    "nombre": "Talento definitivo en ecología"
+  },
+  {
+    "talento_id": "86",
+    "nombre": "Talento definitivo en ornitología"
+  },
+  {
+    "talento_id": "87",
+    "nombre": "Talento definitivo en micología"
+  },
+  {
+    "talento_id": "88",
+    "nombre": "Talento definitivo en jardinería"
+  },
+  {
+    "talento_id": "89",
+    "nombre": "Talento definitivo en observación de estrellas"
+  },
+  {
+    "talento_id": "90",
+    "nombre": "Talento definitivo en cría de mariposas"
+  },
+  {
+    "talento_id": "91",
+    "nombre": "Talento definitivo en ajedrez"
+  },
+  {
+    "talento_id": "92",
+    "nombre": "Talento definitivo en esgrima"
+  },
+  {
+    "talento_id": "93",
+    "nombre": "Talento definitivo en natación"
+  },
+  {
+    "talento_id": "94",
+    "nombre": "Talento definitivo en atletismo"
+  },
+  {
+    "talento_id": "95",
+    "nombre": "Talento definitivo en escalada"
+  },
+  {
+    "talento_id": "96",
+    "nombre": "Talento definitivo en gimnasia"
+  },
+  {
+    "talento_id": "97",
+    "nombre": "Talento definitivo en tenis"
+  },
+  {
+    "talento_id": "98",
+    "nombre": "Talento definitivo en patinaje"
+  },
+  {
+    "talento_id": "99",
+    "nombre": "Talento definitivo en ciclismo"
+  },
+  {
+    "talento_id": "100",
+    "nombre": "Talento definitivo en skateboarding"
+  },
+  {
+    "talento_id": "101",
+    "nombre": "Talento definitivo en voleibol"
+  },
+  {
+    "talento_id": "102",
+    "nombre": "Talento definitivo en artes marciales"
+  },
+  {
+    "talento_id": "103",
+    "nombre": "Talento definitivo en tiro con arco deportivo"
+  },
+  {
+    "talento_id": "104",
+    "nombre": "Talento definitivo en ping-pong"
+  },
+  {
+    "talento_id": "105",
+    "nombre": "Talento definitivo en cubos de velocidad"
+  },
+  {
+    "talento_id": "106",
+    "nombre": "Talento definitivo en panadería"
+  },
+  {
+    "talento_id": "107",
+    "nombre": "Talento definitivo en repostería"
+  },
+  {
+    "talento_id": "108",
+    "nombre": "Talento definitivo en barismo"
+  },
+  {
+    "talento_id": "109",
+    "nombre": "Talento definitivo en cocina de ramen"
+  },
+  {
+    "talento_id": "110",
+    "nombre": "Talento definitivo en chocolatería"
+  },
+  {
+    "talento_id": "111",
+    "nombre": "Talento definitivo en sastrería"
+  },
+  {
+    "talento_id": "112",
+    "nombre": "Talento definitivo en carpintería"
+  },
+  {
+    "talento_id": "113",
+    "nombre": "Talento definitivo en relojería"
+  },
+  {
+    "talento_id": "114",
+    "nombre": "Talento definitivo en encuadernación"
+  },
+  {
+    "talento_id": "115",
+    "nombre": "Talento definitivo en floristería"
+  },
+  {
+    "talento_id": "116",
+    "nombre": "Talento definitivo en orfebrería"
+  },
+  {
+    "talento_id": "117",
+    "nombre": "Talento definitivo en restauración de muebles"
+  },
+  {
+    "talento_id": "118",
+    "nombre": "Talento definitivo en preparación de té"
+  },
+  {
+    "talento_id": "119",
+    "nombre": "Talento definitivo en heladería"
+  },
+  {
+    "talento_id": "120",
+    "nombre": "Talento definitivo en decoración de pasteles"
+  },
+  {
+    "talento_id": "121",
+    "nombre": "Talento definitivo en escritura de fanfics"
+  },
+  {
+    "talento_id": "122",
+    "nombre": "Talento definitivo en traducción literaria"
+  },
+  {
+    "talento_id": "123",
+    "nombre": "Talento definitivo en guion"
+  },
+  {
+    "talento_id": "124",
+    "nombre": "Talento definitivo en montaje de video"
+  },
+  {
+    "talento_id": "125",
+    "nombre": "Talento definitivo en crítica de cine"
+  },
+  {
+    "talento_id": "126",
+    "nombre": "Talento definitivo en reseña de videojuegos"
+  },
+  {
+    "talento_id": "127",
+    "nombre": "Talento definitivo en edición editorial"
+  },
+  {
+    "talento_id": "128",
+    "nombre": "Talento definitivo en locución de radio"
+  },
+  {
+    "talento_id": "129",
+    "nombre": "Talento definitivo en creación de cómics"
+  },
+  {
+    "talento_id": "130",
+    "nombre": "Talento definitivo en protección de spoilers"
+  },
+  {
+    "talento_id": "131",
+    "nombre": "Talento definitivo en diseño de fanzines"
+  },
+  {
+    "talento_id": "132",
+    "nombre": "Talento definitivo en colección de juegos retro"
+  },
+  {
+    "talento_id": "133",
+    "nombre": "Talento definitivo en fotografía callejera"
+  },
+  {
+    "talento_id": "134",
+    "nombre": "Talento definitivo en curaduría de museos"
+  },
+  {
+    "talento_id": "135",
+    "nombre": "Talento definitivo en rescate de cintas vhs"
+  },
+  {
+    "talento_id": "136",
+    "nombre": "Detective de bugs definitivo"
+  },
+  {
+    "talento_id": "137",
+    "nombre": "Coleccionista de pestañas abiertas definitivo"
+  },
+  {
+    "talento_id": "138",
+    "nombre": "Talento definitivo en catación de ramen instantáneo"
+  },
+  {
+    "talento_id": "139",
+    "nombre": "Talento definitivo en invención de excusas"
+  },
+  {
+    "talento_id": "140",
+    "nombre": "Talento definitivo en reconocimiento de voces sospechosas"
+  },
+  {
+    "talento_id": "141",
+    "nombre": "Talento definitivo en hallazgo de objetos perdidos"
+  },
+  {
+    "talento_id": "142",
+    "nombre": "Talento definitivo en organización de cables imposibles"
+  },
+  {
+    "talento_id": "143",
+    "nombre": "Talento definitivo en detección de trampas en juegos de mesa"
+  },
+  {
+    "talento_id": "144",
+    "nombre": "Talento definitivo en construcción de fuertes de cartón"
+  },
+  {
+    "talento_id": "145",
+    "nombre": "Talento definitivo en memorización de contraseñas ficticias"
+  },
+  {
+    "talento_id": "146",
+    "nombre": "Talento definitivo en doblado de mapas rebeldes"
+  },
+  {
+    "talento_id": "147",
+    "nombre": "Talento definitivo en adivinación de canciones en un segundo"
+  },
+  {
+    "talento_id": "148",
+    "nombre": "Talento definitivo en preparación de meriendas nocturnas"
+  },
+  {
+    "talento_id": "149",
+    "nombre": "Talento definitivo en predicción de cuándo caerá el wi-fi"
+  },
+  {
+    "talento_id": "150",
+    "nombre": "Talento definitivo en clasificación de pruebas que nadie pidió"
+  }
+]

@@ -1,0 +1,476 @@
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { AnimatePresence, LayoutGroup } from 'framer-motion';
+import { RotateCcw, Volume2, VolumeX } from 'lucide-react';
+import {
+  fetchObras,
+  fetchPersonajes,
+  fetchRecomendaciones,
+} from './lib/danganronpa.mjs';
+import { audioEngine } from './lib/audioEngine.js';
+import AccountSection from './components/AccountSection.jsx';
+import HeroOpening from './components/HeroOpening.jsx';
+import CatalogSection from './components/CatalogSection.jsx';
+import EvidenceBoard from './components/EvidenceBoard.jsx';
+import TrialRecommendations from './components/TrialRecommendations.jsx';
+import DossierModal from './components/DossierModal.jsx';
+import MiniTrialModal from './components/MiniTrialModal.jsx';
+
+const CAST_GAME_SLUGS = ['dr1', 'dr2', 'v3', 'udg'];
+
+export default function App() {
+  // Datos desde Supabase
+  const [obras, setObras] = useState([]);
+  const [obrasLoading, setObrasLoading] = useState(true);
+  const [obrasError, setObrasError] = useState(null);
+
+  const [castObraSlug, setCastObraSlug] = useState('dr1');
+  const [castBySlug, setCastBySlug] = useState({});
+  const [castLoading, setCastLoading] = useState(true);
+  const [castError, setCastError] = useState(null);
+
+  const [recomendaciones, setRecomendaciones] = useState([]);
+  const [recsLoading, setRecsLoading] = useState(true);
+  const [recsError, setRecsError] = useState(null);
+
+  // Navegación activa + control de sonido (inicia en silencio)
+  const [activeSection, setActiveSection] = useState('obras');
+  const [soundEnabled, setSoundEnabled] = useState(false);
+  const [soundVolume, setSoundVolume] = useState(() => audioEngine.volume);
+
+  // Caso activo en portada
+  const [heroActiveSlug, setHeroActiveSlug] = useState('dr1');
+
+  // Filtros del catálogo
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedTipo, setSelectedTipo] = useState('todos');
+  const [selectedPlatform, setSelectedPlatform] = useState('todas');
+
+  // Expediente abierto + origen para transición compartida
+  const [activeObra, setActiveObra] = useState(null);
+  const [activeSharedCoverId, setActiveSharedCoverId] = useState(null);
+  const [dossierCast, setDossierCast] = useState([]);
+  const [dossierCastLoading, setDossierCastLoading] = useState(false);
+  const [dossierCastError, setDossierCastError] = useState(null);
+
+  // Tribunal opcional desde Recomendaciones
+  const [miniTrialOpen, setMiniTrialOpen] = useState(false);
+
+  const savedScrollYRef = useRef(0);
+  const lastTriggerElRef = useRef(null);
+  const pushedHistoryRef = useRef(false);
+
+  // Seguir la sección visible para marcarla con una línea rosa corta en el menú
+  useEffect(() => {
+    const ids = ['obras', 'personajes', 'recomendaciones'];
+    const els = ids.map((id) => document.getElementById(id)).filter(Boolean);
+    if (els.length === 0 || typeof IntersectionObserver === 'undefined') return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+        if (visible[0]?.target?.id) {
+          setActiveSection(visible[0].target.id);
+        }
+      },
+      { rootMargin: '-25% 0px -55% 0px', threshold: [0.1, 0.35] }
+    );
+
+    els.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
+  const handleToggleSound = () => {
+    const next = !soundEnabled;
+    setSoundEnabled(next);
+    audioEngine.setEnabled(next);
+    if (next) audioEngine.playSelectClick();
+  };
+
+  const handleVolumeChange = (e) => {
+    const nextVol = Number(e.target.value);
+    setSoundVolume(nextVol);
+    audioEngine.setVolume(nextVol);
+    if (nextVol > 0 && !soundEnabled) {
+      setSoundEnabled(true);
+      audioEngine.setEnabled(true);
+    }
+  };
+
+  const loadObras = useCallback(async () => {
+    setObrasLoading(true);
+    setObrasError(null);
+    try {
+      const data = await fetchObras();
+      setObras(data);
+    } catch (err) {
+      setObrasError(err.message || 'No se pudieron cargar las obras.');
+    } finally {
+      setObrasLoading(false);
+    }
+  }, []);
+
+  const loadCastForSlug = useCallback(async (slug) => {
+    setCastLoading(true);
+    setCastError(null);
+    try {
+      const rows = await fetchPersonajes(slug);
+      setCastBySlug((prev) => ({ ...prev, [slug]: rows }));
+      return rows;
+    } catch (err) {
+      setCastError(err.message || 'No se pudo cargar el reparto.');
+      return null;
+    } finally {
+      setCastLoading(false);
+    }
+  }, []);
+
+  const loadRecomendaciones = useCallback(async () => {
+    setRecsLoading(true);
+    setRecsError(null);
+    try {
+      const data = await fetchRecomendaciones();
+      setRecomendaciones(data);
+    } catch (err) {
+      setRecsError(err.message || 'No se pudieron cargar las recomendaciones.');
+    } finally {
+      setRecsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadObras();
+    loadRecomendaciones();
+  }, [loadObras, loadRecomendaciones]);
+
+  useEffect(() => {
+    if (castBySlug[castObraSlug]) {
+      setCastLoading(false);
+      setCastError(null);
+      return;
+    }
+    loadCastForSlug(castObraSlug);
+  }, [castObraSlug, castBySlug, loadCastForSlug]);
+
+  const obrasConReparto = useMemo(() => {
+    return CAST_GAME_SLUGS.map((slug) => obras.find((o) => o.slug === slug)).filter(
+      Boolean
+    );
+  }, [obras]);
+
+  const currentCastList = castBySlug[castObraSlug] || [];
+  const currentCastObra = useMemo(
+    () => obras.find((o) => o.slug === castObraSlug),
+    [obras, castObraSlug]
+  );
+
+  const loadDossierCast = useCallback(async (slug) => {
+    setDossierCastLoading(true);
+    setDossierCastError(null);
+    try {
+      const rows = await fetchPersonajes(slug);
+      setCastBySlug((prev) => ({ ...prev, [slug]: rows }));
+      setDossierCast(rows);
+    } catch (err) {
+      setDossierCastError(err.message || 'Error al consultar el reparto.');
+    } finally {
+      setDossierCastLoading(false);
+    }
+  }, []);
+
+  const restoreAfterClose = useCallback(() => {
+    const targetY = savedScrollYRef.current;
+    const triggerEl = lastTriggerElRef.current;
+    window.requestAnimationFrame(() => {
+      window.scrollTo({ top: targetY, behavior: 'instant' });
+      if (
+        triggerEl &&
+        typeof triggerEl.focus === 'function' &&
+        triggerEl.isConnected
+      ) {
+        triggerEl.focus({ preventScroll: true });
+      }
+    });
+  }, []);
+
+  const handleOpenObra = useCallback(
+    (obra, triggerEl, source = 'catalog') => {
+      savedScrollYRef.current = window.scrollY;
+      lastTriggerElRef.current = triggerEl || document.activeElement;
+      setActiveSharedCoverId(`${source}:${obra.slug}`);
+      audioEngine.playSelectClick();
+
+      if (!pushedHistoryRef.current) {
+        window.history.pushState(
+          { expediente: obra.slug },
+          '',
+          `#expediente-${obra.slug}`
+        );
+        pushedHistoryRef.current = true;
+      }
+
+      setActiveObra(obra);
+
+      if (castBySlug[obra.slug]) {
+        setDossierCast(castBySlug[obra.slug]);
+        setDossierCastLoading(false);
+        setDossierCastError(null);
+      } else {
+        loadDossierCast(obra.slug);
+      }
+    },
+    [castBySlug, loadDossierCast]
+  );
+
+  const closeDossierImmediate = useCallback(() => {
+    setActiveObra(null);
+    restoreAfterClose();
+  }, [restoreAfterClose]);
+
+  const handleCloseObra = useCallback(() => {
+    if (pushedHistoryRef.current) {
+      pushedHistoryRef.current = false;
+      window.history.back();
+      return;
+    }
+    closeDossierImmediate();
+  }, [closeDossierImmediate]);
+
+  // Saltar desde un expediente a Personajes con la entrega correcta seleccionada
+  const handleJumpToCast = useCallback((obraSlug) => {
+    if (CAST_GAME_SLUGS.includes(obraSlug)) {
+      setCastObraSlug(obraSlug);
+    }
+    if (pushedHistoryRef.current) {
+      pushedHistoryRef.current = false;
+      window.history.replaceState(null, '', '#personajes');
+    }
+    setActiveObra(null);
+    window.requestAnimationFrame(() => {
+      const sectionEl = document.getElementById('personajes');
+      sectionEl?.scrollIntoView({ behavior: 'smooth' });
+    });
+  }, []);
+
+  useEffect(() => {
+    const onPopState = () => {
+      if (activeObra) {
+        pushedHistoryRef.current = false;
+        closeDossierImmediate();
+      }
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, [activeObra, closeDossierImmediate]);
+
+  return (
+    <LayoutGroup>
+      <div className="app-shell">
+        <header className="site-header">
+          <div className="container header-inner">
+            <a href="#top" className="brand-mark">
+              <span className="brand-dot" aria-hidden="true" />
+              <span className="brand-title">Archivo de casos</span>
+            </a>
+
+            <nav className="site-nav" aria-label="Navegación principal">
+              <a
+                href="#obras"
+                className={`nav-link ${activeSection === 'obras' ? 'is-current' : ''}`}
+              >
+                Obras
+              </a>
+              <a
+                href="#personajes"
+                className={`nav-link ${activeSection === 'personajes' ? 'is-current' : ''}`}
+              >
+                Personajes
+              </a>
+              <a
+                href="#recomendaciones"
+                className={`nav-link ${activeSection === 'recomendaciones' ? 'is-current' : ''}`}
+              >
+                Recomendaciones
+              </a>
+              <a className="nav-link" href="#mi-expediente">Mi expediente</a>
+            </nav>
+
+            <div className="audio-controls" aria-label="Control de sonido">
+              <button
+                type="button"
+                className={`audio-toggle-btn ${soundEnabled ? 'is-on' : ''}`}
+                aria-pressed={soundEnabled}
+                aria-label={soundEnabled ? 'Silenciar sonido' : 'Activar sonido'}
+                onClick={handleToggleSound}
+              >
+                {soundEnabled ? (
+                  <Volume2 size={15} aria-hidden="true" />
+                ) : (
+                  <VolumeX size={15} aria-hidden="true" />
+                )}
+                <span>{soundEnabled ? 'Sonido activo' : 'Activar sonido'}</span>
+              </button>
+
+              <label className="sr-only" htmlFor="audio-volume-range">
+                Volumen del sonido
+              </label>
+              <input
+                id="audio-volume-range"
+                type="range"
+                min="0"
+                max="1"
+                step="0.05"
+                value={soundVolume}
+                onChange={handleVolumeChange}
+                className="audio-volume-slider"
+                aria-label="Volumen"
+              />
+            </div>
+          </div>
+        </header>
+
+        <main id="top">
+          <HeroOpening
+            obras={obras}
+            loading={obrasLoading}
+            activeSlug={heroActiveSlug}
+            onChangeActiveSlug={setHeroActiveSlug}
+            onOpenObra={handleOpenObra}
+            activeSharedCoverId={activeSharedCoverId}
+          />
+
+          <CatalogSection
+            obras={obras}
+            loading={obrasLoading}
+            error={obrasError}
+            onRetry={loadObras}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            selectedTipo={selectedTipo}
+            onTipoChange={setSelectedTipo}
+            selectedPlatform={selectedPlatform}
+            onPlatformChange={setSelectedPlatform}
+            onSelectObra={handleOpenObra}
+            activeSharedCoverId={activeSharedCoverId}
+          />
+
+          <section
+            id="personajes"
+            className="section-block cast-section"
+            aria-labelledby="personajes-heading"
+          >
+            <div className="container">
+              <div className="recs-header">
+                <h2 id="personajes-heading" className="section-title">
+                  Personajes
+                </h2>
+                <p className="section-subtitle">
+                  Elegí una entrega y buscá por nombre o talento para consultar
+                  cada ficha sin spoilers.
+                </p>
+              </div>
+
+              {obrasConReparto.length > 0 && (
+                <div
+                  className="cast-tabs-row"
+                  role="tablist"
+                  aria-label="Seleccionar entrega para ver su reparto"
+                >
+                  {obrasConReparto.map((obra) => {
+                    const isActive = obra.slug === castObraSlug;
+                    return (
+                      <button
+                        key={obra.slug}
+                        type="button"
+                        role="tab"
+                        aria-selected={isActive}
+                        className={`cat-pill ${isActive ? 'is-active' : ''}`}
+                        onClick={() => {
+                          audioEngine.playSelectClick();
+                          setCastObraSlug(obra.slug);
+                        }}
+                      >
+                        {obra.titulo}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+
+              {castError && (
+                <div className="error-panel" role="alert">
+                  <div>
+                    <h3 className="error-panel-title">
+                      No se pudo cargar el reparto
+                    </h3>
+                    <p className="error-panel-msg">{castError}</p>
+                  </div>
+                  <button
+                    type="button"
+                    className="btn-stage-primary"
+                    onClick={() => loadCastForSlug(castObraSlug)}
+                  >
+                    <RotateCcw size={15} aria-hidden="true" />
+                    <span>Reintentar</span>
+                  </button>
+                </div>
+              )}
+
+              {castLoading && !castError && (
+                <div className="skeleton-card is-wide-skeleton" aria-busy="true" />
+              )}
+
+              {!castLoading && !castError && currentCastList.length > 0 && (
+                <EvidenceBoard
+                  personajes={currentCastList}
+                  obraTitulo={currentCastObra?.titulo}
+                  obraSlug={castObraSlug}
+                  boardId={`cast-${castObraSlug}`}
+                  showSearch
+                />
+              )}
+            </div>
+          </section>
+
+          <TrialRecommendations
+            recomendaciones={recomendaciones}
+            loading={recsLoading}
+            error={recsError}
+            onRetry={loadRecomendaciones}
+            onOpenMiniTrial={() => setMiniTrialOpen(true)}
+          />
+          <AccountSection />
+        </main>
+
+        <footer className="site-footer">
+          <div className="container footer-inner">
+            <span>Archivo de casos · Danganronpa en español</span>
+            <span className="mono">Catálogo conectado a Supabase</span>
+          </div>
+        </footer>
+
+        <AnimatePresence onExitComplete={() => setActiveSharedCoverId(null)}>
+          {activeObra && (
+            <DossierModal
+              obra={activeObra}
+              cast={dossierCast}
+              castLoading={dossierCastLoading}
+              castError={dossierCastError}
+              onRetryCast={() => loadDossierCast(activeObra.slug)}
+              onJumpToCast={handleJumpToCast}
+              onClose={handleCloseObra}
+            />
+          )}
+        </AnimatePresence>
+
+        {miniTrialOpen && (
+          <MiniTrialModal
+            recomendaciones={recomendaciones}
+            onClose={() => setMiniTrialOpen(false)}
+          />
+        )}
+      </div>
+    </LayoutGroup>
+  );
+}
