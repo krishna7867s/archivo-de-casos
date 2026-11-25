@@ -157,14 +157,6 @@ export default function HeroOpening({
       </motion.div>
 
       <div className="container hero-stage-inner">
-        <div className={`case-bulletin ${runIntro ? 'is-opening' : ''}`}>
-          <p className="case-bulletin-title">Archivo de casos</p>
-          <div className="case-bulletin-art" aria-hidden="true">
-            <img src="./images/dr-scrapbook-dossier.jpg" alt="" />
-            <img src="./images/dr-animation-poster.jpg" alt="" />
-            <img src="./images/dr-v3-keyart.jpg" alt="" />
-          </div>
-        </div>
         <div className="hero-center-grid">
           {/* ~3/5 del espacio: arte con marco oblicuo y mancha rosa gráfica detrás de una esquina */}
           <div className="hero-artwork-column">

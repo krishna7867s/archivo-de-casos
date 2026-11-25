@@ -329,6 +329,16 @@ export default function App() {
         </header>
 
         <main id="top" tabIndex={-1}>
+          <div className="case-bulletin-wrap">
+            <div className="container case-bulletin is-opening">
+              <p className="case-bulletin-title">Archivo de casos</p>
+              <div className="case-bulletin-art" aria-hidden="true">
+                <img src={import.meta.env.BASE_URL + 'images/dr-scrapbook-dossier.jpg'} alt="" />
+                <img src={import.meta.env.BASE_URL + 'images/dr-animation-poster.jpg'} alt="" />
+                <img src={import.meta.env.BASE_URL + 'images/dr-v3-keyart.jpg'} alt="" />
+              </div>
+            </div>
+          </div>
           {activeSection === 'top' && (
             <HeroOpening
               obras={obras}
