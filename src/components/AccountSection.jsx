@@ -10,9 +10,10 @@ async function request(path, method = 'GET', body, signal) {
     method, signal,
     ...(body && { headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }),
   });
-  const data = await response.json().catch(() => ({}));
+  const data = await response.json().catch(() => null);
+  if (response.ok && !data) throw new Error('El servidor de cuentas no respondió. Abrí el sitio con el servidor de Archivo de casos.');
   if (!response.ok) {
-    const error = new Error(data.error || 'No se pudo conectar con el archivo privado.');
+    const error = new Error(data?.error || 'No se pudo conectar con el archivo privado.');
     error.status = response.status;
     throw error;
   }

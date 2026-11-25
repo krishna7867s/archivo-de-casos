@@ -25,10 +25,12 @@ const emailSchema = z.email().max(254).transform((value) => value.toLowerCase())
 const passwordSchema = z.string().min(12).max(128)
   .regex(/[a-z]/).regex(/[A-Z]/).regex(/[0-9]/).regex(/[^a-zA-Z0-9]/);
 const registerSchema = z.object({
-  email: emailSchema,
+  email: z.preprocess((value) => typeof value === 'string' ? value.trim() : value, emailSchema),
   name: z.string().trim().min(2).max(100),
   password: passwordSchema,
-  phone: z.string().regex(/^\+?[0-9]{8,15}$/),
+  phone: z.string().trim().max(32)
+    .transform((value) => value.replace(/[ ()-]/g, ''))
+    .pipe(z.string().regex(/^\+?[0-9]{8,15}$/)),
 });
 const loginSchema = z.object({ email: emailSchema, password: z.string().min(1).max(128) });
 const noteSchema = z.object({ title: z.string().trim().min(1).max(120), body: z.string().trim().min(1).max(8000) });
@@ -216,8 +218,19 @@ export async function createVault({ filename, key, origin, allowedOrigins = [ori
   }
 
   api.post('/register', async (req, res) => {
-    limit('register:' + req.ip, 8, 600000);
-    const data = validate(registerSchema, req.body);
+    const registration = registerSchema.safeParse(req.body);
+    if (!registration.success) {
+      const messages = {
+        email: 'Ingresá un correo válido.',
+        name: 'Ingresá un nombre de entre 2 y 100 caracteres.',
+        password: 'Usá entre 12 y 128 caracteres, con mayúscula, minúscula, número y símbolo.',
+        phone: 'Ingresá un teléfono de 8 a 15 dígitos. Podés usar guiones, espacios o el prefijo +.',
+      };
+      const field = registration.error.issues[0]?.path[0];
+      throw new RequestError(400, Object.hasOwn(messages, field) ? messages[field] : 'Revisá los datos del formulario.');
+    }
+    const data = registration.data;
+    limit('register-valid:' + req.ip, 8, 600000);
     const existing = get('SELECT * FROM users WHERE email = ?', data.email);
     if (existing) {
       if (!await verifyPassword(data.password, existing.password)) throw new RequestError(409, 'No se pudo registrar la cuenta.');

@@ -1,4 +1,4 @@
-﻿import assert from 'node:assert/strict';
+import assert from 'node:assert/strict';
 import { randomBytes } from 'node:crypto';
 import { test } from 'node:test';
 import { createVault } from './vault.mjs';
@@ -32,9 +32,13 @@ test('SecureVault: admisión, sesiones, notas, recuperación y Dirección', asyn
     return { ...data, cookie: response.headers.get('set-cookie')?.split(';')[0] };
   }
 
-  const alice = { name: 'Estudiante A', email: 'alumna@example.test', phone: '88881234', password: 'Una-Prueba2026' };
+  const alice = { name: 'Estudiante A', email: 'alumna@example.test', phone: '+506 8888-1234', password: 'Una-Prueba2026' };
   const bob = { ...alice, name: 'Estudiante B', email: 'alumno@example.test' };
   assert.equal((await call('/health')).status, 'ok');
+  for (let attempt = 0; attempt < 9; attempt += 1) {
+    const rejected = await call('/api/register', { status: 400, method: 'POST', body: { ...alice, password: 'corta' } });
+    assert.match(rejected.error, /mayúscula/);
+  }
   const a = await call('/api/register', { status: 201, method: 'POST', body: { ...alice, role: 'administrador' } });
   assert.equal(a.profile.role, 'usuario');
   assert.equal(a.profile.phone, '•••• 1234');
