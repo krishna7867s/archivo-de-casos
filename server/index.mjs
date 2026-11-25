@@ -1,18 +1,25 @@
 ﻿import { mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import express from 'express';
-import { createVault, smtpDelivery } from './vault.mjs';
+import { createVault, resendDelivery, smtpDelivery } from './vault.mjs';
 
-const production = process.env.NODE_ENV === 'production';
-const filename = resolve(process.env.VAULT_DB || '.vault/securevault.sqlite');
-const origin = new URL(process.env.APP_ORIGIN || 'http://localhost:5173').origin;
-if (production && (!process.env.VAULT_DB || !process.env.APP_ORIGIN || !process.env.SUPABASE_SERVER_KEY)) {
-  throw new Error('Configurá VAULT_DB, APP_ORIGIN y SUPABASE_SERVER_KEY.');
-}
+const railway = Boolean(process.env.RAILWAY_ENVIRONMENT_ID);
+const production = railway || process.env.NODE_ENV === 'production';
+const volume = process.env.RAILWAY_VOLUME_MOUNT_PATH;
+const databasePath = process.env.VAULT_DB || (railway && volume && resolve(volume, 'securevault.sqlite'));
+const railwayDomain = process.env.RAILWAY_PUBLIC_DOMAIN;
+const publicOrigin = process.env.APP_ORIGIN || (railway && railwayDomain && `https://${railwayDomain}`);
+if (production && !databasePath) throw new Error('Configurá VAULT_DB o adjuntá el volumen de Railway.');
+if (production && !publicOrigin) throw new Error('Configurá APP_ORIGIN o generá el dominio público de Railway.');
+if (production && !process.env.SUPABASE_SERVER_KEY) throw new Error('Configurá SUPABASE_SERVER_KEY.');
+const filename = resolve(databasePath || '.vault/securevault.sqlite');
+const origin = new URL(publicOrigin || 'http://localhost:5173').origin;
 mkdirSync(dirname(filename), { recursive: true });
 const vault = await createVault({
   filename, origin, production, key: Buffer.from(process.env.VAULT_KEY || '', 'base64'),
-  proxy: process.env.TRUST_PROXY === '1', deliverReset: smtpDelivery(process.env),
+  proxy: process.env.TRUST_PROXY ? process.env.TRUST_PROXY === '1' : railway,
+  internalHealthHost: railway ? 'healthcheck.railway.app' : undefined,
+  deliverReset: resendDelivery(process.env) ?? (railway ? undefined : smtpDelivery(process.env)),
 });
 if (process.argv[2] === 'promover') {
   vault.provisionAdmin(process.argv[3]);

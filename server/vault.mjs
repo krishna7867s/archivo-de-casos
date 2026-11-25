@@ -71,7 +71,7 @@ export async function drawTalent() {
   return talent;
 }
 
-export async function createVault({ filename, key, origin, allowedOrigins = [origin], production = false, sort = drawTalent, deliverReset, proxy = false, log = console.log }) {
+export async function createVault({ filename, key, origin, allowedOrigins = [origin], production = false, sort = drawTalent, deliverReset, proxy = false, internalHealthHost, log = console.log }) {
   if (!Buffer.isBuffer(key) || key.length !== 32) throw new Error('Configurá una llave de 32 bytes.');
   if (production && new URL(origin).protocol !== 'https:') throw new Error('Configurá el origen HTTPS.');
   const db = new DatabaseSync(filename);
@@ -174,7 +174,9 @@ export async function createVault({ filename, key, origin, allowedOrigins = [ori
     } },
   }));
   app.use((req, res, next) => {
-    if (production && !req.secure) return res.redirect(308, new URL(req.originalUrl.replace(/^\/+/, '/'), origin).href);
+    if (internalHealthHost && req.method === 'GET' && req.path === '/health' &&
+      req.get('host') === internalHealthHost) return next();
+    if (production && !req.secure) return res.redirect(308, origin + '/' + req.originalUrl.replace(/^[/\\]+/, ''));
     next();
   });
   app.get('/health', (_req, res) => {
@@ -413,4 +415,25 @@ export function smtpDelivery(config) {
     from: config.MAIL_FROM, to, subject: 'Recuperá tu expediente',
     text: 'El enlace de recuperación vence en 15 minutos. Si solicitaste el cambio, abrí este enlace: ' + url,
   });
+}
+
+export function resendDelivery(config) {
+  if (!config.RESEND_API_KEY || !config.MAIL_FROM) return undefined;
+  return async (to, url) => {
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: 'Bearer ' + config.RESEND_API_KEY,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: config.MAIL_FROM,
+        to: [to],
+        subject: 'Recuperá tu expediente',
+        text: 'El enlace vence en 15 minutos. Si solicitaste el cambio, abrí este enlace: ' + url,
+      }),
+      signal: AbortSignal.timeout(6000),
+    });
+    if (!response.ok) throw new Error('No se pudo entregar el correo de recuperación.');
+  };
 }
