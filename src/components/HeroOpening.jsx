@@ -202,7 +202,7 @@ export default function HeroOpening({
                       ease: [0.4, 0, 0.2, 1],
                     }}
                   >
-                    <WorkCover obra={prevObra} priority />
+                    <WorkCover obra={prevObra} priority forceContain />
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -242,7 +242,7 @@ export default function HeroOpening({
                     aria-label={`Abrir expediente de ${activeObra.titulo}`}
                     onClick={(e) => onOpenObra(activeObra, e.currentTarget, 'hero')}
                   >
-                    <WorkCover obra={activeObra} priority />
+                    <WorkCover obra={activeObra} priority forceContain />
                   </button>
                 ) : (
                   <div className="hero-artwork-skeleton" aria-busy={loading} />
@@ -426,7 +426,7 @@ export default function HeroOpening({
                 <div className="hero-seat-info">
                   <span className="hero-seat-meta">
                     <span>{obra?.anio || ''}</span>
-                    {isSelected && <span className="hero-seat-active-pill">ACTIVO</span>}
+                    {isSelected && <span className="hero-seat-active-pill">En cartelera</span>}
                   </span>
                   <span className="hero-seat-name">{theme.shortName}</span>
                 </div>
