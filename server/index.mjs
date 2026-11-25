@@ -11,7 +11,6 @@ const railwayDomain = process.env.RAILWAY_PUBLIC_DOMAIN;
 const publicOrigin = process.env.APP_ORIGIN || (railway && railwayDomain && `https://${railwayDomain}`);
 if (production && !databasePath) throw new Error('Configurá VAULT_DB o adjuntá el volumen de Railway.');
 if (production && !publicOrigin) throw new Error('Configurá APP_ORIGIN o generá el dominio público de Railway.');
-if (production && !process.env.SUPABASE_SERVER_KEY) throw new Error('Configurá SUPABASE_SERVER_KEY.');
 const filename = resolve(databasePath || '.vault/securevault.sqlite');
 const origin = new URL(publicOrigin || 'http://localhost:5173').origin;
 mkdirSync(dirname(filename), { recursive: true });
