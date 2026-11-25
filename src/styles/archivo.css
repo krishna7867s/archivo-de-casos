@@ -2967,3 +2967,161 @@ img.cast-roster-image { width: 100%; height: 100%; object-fit: cover; object-pos
   from { transform: translateX(0); }
   to { transform: translateX(var(--panel-exit)); }
 }
+
+/* Expediente personal: credencial laminada y cuaderno de investigación. */
+.vault-section {
+  min-height: 68vh;
+  background:
+    radial-gradient(ellipse at 12% 0, #57235475, transparent 55%),
+    repeating-linear-gradient(145deg, transparent 0 26px, #ac6bc511 26px 27px),
+    #130c1c;
+}
+
+.vault-container { max-width: 1160px; }
+
+.vault-heading {
+  display: flex;
+  align-items: center;
+  gap: .85rem;
+  margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+.vault-heading > svg {
+  box-sizing: content-box;
+  padding: .6rem;
+  color: #190d22;
+  background: #ff70ad;
+  transform: rotate(-7deg);
+  box-shadow: 4px 4px #612851;
+}
+
+.vault-heading .section-title { margin: 0; }
+
+.vault-columns {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  align-items: start;
+  gap: clamp(1.25rem, 4vw, 3rem);
+}
+
+.vault-identity {
+  min-width: 0;
+}
+
+.vault-badge {
+  position: relative;
+  isolation: isolate;
+  padding: 0 1.2rem 2.2rem;
+  border: 1px solid #b477ae;
+  border-top: 4px solid #ff589d;
+  background:
+    radial-gradient(circle at 100% 0, #8b3975 0, transparent 58%),
+    repeating-linear-gradient(130deg, transparent 0 12px, #d598c014 12px 13px),
+    #281534;
+  box-shadow: 6px 6px #0b0710, 7px 7px #783e78;
+}
+
+.vault-badge::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0;
+  height: .6rem;
+  pointer-events: none;
+  background: repeating-conic-gradient(#c37cb0 0% 25%, #281534 0% 50%) 0 0 / 12px 12px;
+}
+
+.vault-badge-band {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .6rem;
+  margin-bottom: 1.3rem;
+  padding: .55rem 0;
+  border-bottom: 1px solid #ffb4db61;
+  color: #ffb4db;
+  font: 600 .75rem var(--font-mono);
+  text-transform: uppercase;
+}
+
+.vault-role { color: #ead3eb; font-size: .8rem; }
+.vault-badge h3 { line-height: 1; margin: .55rem 0 .85rem; }
+
+.vault-badge .vault-talent {
+  display: inline-block;
+  padding: .3rem .6rem;
+  color: #240f23;
+  background: #ff8ebe;
+  box-shadow: 3px 3px #6f2c62;
+  font-size: .93rem;
+}
+
+.vault-identity-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  padding-top: 1.15rem;
+}
+
+.vault-identity-footer p { margin: 0; color: var(--text-soft); }
+.vault-identity-footer button, .vault-note button { display: inline-flex; align-items: center; gap: .35rem; }
+
+.vault-notebook {
+  margin: 0;
+  background: #21152d;
+  border: 1px solid #905981;
+  box-shadow: 6px 6px #0b0710;
+}
+
+.vault-notebook-header {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  margin-bottom: 1.15rem;
+  padding-bottom: .65rem;
+  border-bottom: 2px solid #bc538d;
+  color: #ffa2c8;
+}
+
+.vault-notebook-header h3 {
+  flex: 1;
+  margin: 0;
+  color: var(--text-ivory);
+  font: 800 1.75rem / 1 var(--font-display);
+}
+
+.vault-notebook textarea {
+  min-height: 7rem;
+  resize: vertical;
+  line-height: 1.6;
+  background-image: repeating-linear-gradient(transparent 0 calc(1.6em - 1px), #aa80b52e calc(1.6em - 1px) 1.6em);
+  background-origin: content-box;
+}
+
+.vault-notebook .btn-stage-primary { border-color: #ffa7cc; }
+.vault-note { padding-inline-start: .75rem; border-inline-start: 2px solid #a84a85; }
+.vault-note h4 { margin-bottom: .3rem; }
+.vault-note p { margin-top: .3rem; }
+
+@media (max-width: 740px) {
+  .vault-columns { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .vault-identity, .vault-admission {
+    animation: verdict-reveal 240ms ease-out both;
+  }
+
+  .vault-notebook { animation: vault-page-in 280ms 70ms ease-out both; }
+  .vault-note.is-filed { animation: vault-note-filed 450ms ease-out both; }
+}
+
+@keyframes vault-page-in {
+  from { opacity: 0; transform: translateX(12px) rotate(-1deg); }
+  to { opacity: 1; transform: translateX(0) rotate(0); }
+}
+
+@keyframes vault-note-filed {
+  from { background-color: #83304e; transform: translateX(6px); }
+  to { background-color: transparent; transform: translateX(0); }
+}

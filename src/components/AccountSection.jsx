@@ -1,4 +1,5 @@
 ﻿import React, { useEffect, useState } from 'react';
+import { BadgeCheck, BookOpen, ClipboardList, DoorOpen, Pencil } from 'lucide-react';
 import { audioEngine } from '../lib/audioEngine.js';
 
 const roleName = { usuario: 'Estudiante definitivo', administrador: 'Dirección de la Academia' };
@@ -79,6 +80,8 @@ function Notes({ onError }) {
   const [busy, setBusy] = useState(false);
   const [confirm, setConfirm] = useState(null);
   const [loadError, setLoadError] = useState('');
+  const [feedback, setFeedback] = useState('');
+  const [highlight, setHighlight] = useState(null);
   const [retry, setRetry] = useState(0);
   useEffect(() => {
     const controller = new AbortController();
@@ -94,6 +97,8 @@ function Notes({ onError }) {
     setBusy(true);
     try {
       const note = await request(draft.id ? '/notes/' + draft.id : '/notes', draft.id ? 'PUT' : 'POST', { title: draft.title, body: draft.body });
+      setHighlight(note.id);
+      setFeedback(draft.id ? 'Cambios guardados.' : 'Nota creada.');
       setNotes((previous) => [note, ...previous.filter((item) => item.id !== note.id)]);
       setDraft({ title: '', body: '' });
       onError('');
@@ -108,13 +113,19 @@ function Notes({ onError }) {
       setNotes((previous) => previous.filter((item) => item.id !== id));
       if (draft.id === id) setDraft({ title: '', body: '' });
       setConfirm(null);
+      setFeedback('Nota eliminada.');
       onError('');
     } catch (error) { onError(error.message); }
     finally { setBusy(false); }
   }
 
-  return <div className="vault-panel">
-    <h3>Notas privadas</h3>
+  return <div className="vault-panel vault-notebook">
+    <div className="vault-notebook-header">
+      <BookOpen size={23} aria-hidden="true" />
+      <h3>Notas privadas</h3>
+      {notes && <span className="mono">{notes.length}/100</span>}
+    </div>
+    <p className="sr-only" role="status">{feedback}</p>
     {loadError ? <p role="alert">{loadError} <button className="cat-pill" onClick={() => setRetry(retry + 1)}>Reintentar</button></p> :
       !notes ? <p role="status">Cargando notas…</p> : <>
         <form className="vault-form" onSubmit={save}>
@@ -126,10 +137,10 @@ function Notes({ onError }) {
           </div>
         </form>
         {notes.length === 0 && <p>Todavía no hay notas.</p>}
-        {notes.map((note) => <article className="vault-note" key={note.id}>
+        {notes.map((note) => <article className={`vault-note ${highlight === note.id ? 'is-filed' : ''}`} key={note.id} onAnimationEnd={() => setHighlight((current) => current === note.id ? null : current)}>
           <h4>{note.title}</h4><p>{note.body}</p>
           <div className="vault-actions">
-            <button className="cat-pill" disabled={busy} onClick={() => setDraft(note)}>Editar</button>
+            <button className="cat-pill" disabled={busy} onClick={() => setDraft(note)}><Pencil size={13} aria-hidden="true" /> Editar</button>
             {confirm === note.id ? <>
               <button className="cat-pill" disabled={busy} onClick={() => remove(note.id)}>Confirmar eliminación</button>
               <button className="cat-pill" disabled={busy} onClick={() => setConfirm(null)}>Cancelar</button>
@@ -196,22 +207,31 @@ export default function AccountSection() {
   }
 
   return <section className="section-block vault-section" id="mi-expediente" aria-labelledby="vault-heading">
-    <div className="container">
-      <h2 className="section-title" id="vault-heading">Mi expediente</h2>
+    <div className="container vault-container">
+      <header className="vault-heading">
+        <ClipboardList aria-hidden="true" />
+        <h2 className="section-title" id="vault-heading">Mi expediente</h2>
+      </header>
       {error && <p className="vault-feedback" role="alert">{error}</p>}
       {notice && <p className="vault-feedback" role="status">{notice}</p>}
       {loadingProfile ? <p role="status">Cargando expediente…</p> : profile ? <>
         <div className="vault-columns">
-          <div className="vault-panel">
+          <div className="vault-identity">
             <div className={`vault-badge ${reveal ? 'is-revealing' : ''}`} onAnimationEnd={(e) => {
               if (e.animationName === 'vault-credential') audioEngine.playSelectClick();
             }}>
-              <span className="mono">{roleName[profile.role]}</span>
+              <div className="vault-badge-band">
+                <span>Credencial de la Academia</span>
+                <BadgeCheck size={20} aria-hidden="true" />
+              </div>
+              <span className="vault-role mono">{roleName[profile.role]}</span>
               <h3>{profile.name}</h3>
-              <strong>{profile.talent}</strong>
+              <strong className="vault-talent">{profile.talent}</strong>
             </div>
-            <p>Teléfono <span className="mono">{profile.phone}</span></p>
-            <button className="cat-pill" disabled={busy} onClick={logout}>Cerrar sesión</button>
+            <div className="vault-identity-footer">
+              <p>Teléfono <span className="mono">{profile.phone}</span></p>
+              <button className="cat-pill" disabled={busy} onClick={logout}><DoorOpen size={15} aria-hidden="true" /> Cerrar sesión</button>
+            </div>
           </div>
           <Notes key={profile.id} onError={setError} />
         </div>
