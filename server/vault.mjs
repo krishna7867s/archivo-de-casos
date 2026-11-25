@@ -167,6 +167,7 @@ export async function createVault({ filename, key, origin, allowedOrigins = [ori
       scriptSrcAttr: ["'none'"],
       styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
       fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+      frameSrc: ['https://open.spotify.com'],
       imgSrc: ["'self'", 'https:', 'data:'],
       connectSrc: ["'self'", 'https://iaburcfczgxxyqpttqrz.supabase.co'],
       upgradeInsecureRequests: production ? [] : null,

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, LayoutGroup } from 'framer-motion';
-import { RotateCcw, Volume2, VolumeX } from 'lucide-react';
+import { Music2, RotateCcw, Volume2, VolumeX } from 'lucide-react';
 import {
   fetchObras,
   fetchPersonajes,
@@ -55,6 +55,7 @@ export default function App() {
   const [soundVolume, setSoundVolume] = useState(() => audioEngine.volume);
   const [soundStarting, setSoundStarting] = useState(false);
   const [soundError, setSoundError] = useState('');
+  const [spotifyLoaded, setSpotifyLoaded] = useState(false);
 
   // Caso activo en portada
   const [heroActiveSlug, setHeroActiveSlug] = useState('dr1');
@@ -332,6 +333,26 @@ export default function App() {
                 aria-label="Volumen"
               />
               {soundError && <span role="status">{soundError}</span>}
+              <details className="spotify-player" onToggle={(event) => {
+                if (event.currentTarget.open) setSpotifyLoaded(true);
+              }}>
+                <summary className="audio-toggle-btn">
+                  <Music2 size={15} aria-hidden="true" />
+                  Spotify
+                </summary>
+                <div className="spotify-player-panel">
+                  {spotifyLoaded && (
+                    <iframe
+                      title="Spotify · Banda sonora de Danganronpa: Trigger Happy Havoc"
+                      src="https://open.spotify.com/embed/album/3OOQRkcyunBEAzAuPt8Zow"
+                      width="100%"
+                      height={352}
+                      allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+                      allowFullScreen
+                    />
+                  )}
+                </div>
+              </details>
             </div>
           </div>
         </header>
