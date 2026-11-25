@@ -3233,6 +3233,17 @@ img.cast-roster-image { width: 100%; height: 100%; object-fit: cover; object-pos
 .hero-case-year { grid-area: year; color: var(--archive-print); }
 .hero-case-summary { color: #392a3a; }
 
+.hero-data-error {
+  border-top: 1px solid #7c425e55;
+  padding-top: .75rem;
+}
+
+.hero-data-error p {
+  margin: 0 0 .75rem;
+  color: var(--archive-print);
+  font-weight: 700;
+}
+
 .btn-stage-primary {
   color: #1c0c20;
   border-color: #110b16;

@@ -57,6 +57,7 @@ export default function WorkCover({
         src={src}
         alt={`Portada de ${obra.titulo}`}
         className="cover-img"
+        referrerPolicy="no-referrer"
         style={{ objectPosition: setting.objectPosition }}
         loading={priority ? 'eager' : 'lazy'}
         decoding="async"

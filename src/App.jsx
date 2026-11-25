@@ -340,6 +340,8 @@ export default function App() {
             <HeroOpening
               obras={obras}
               loading={obrasLoading}
+              error={obrasError}
+              onRetry={loadObras}
               activeSlug={heroActiveSlug}
               onChangeActiveSlug={setHeroActiveSlug}
               onOpenObra={handleOpenObra}

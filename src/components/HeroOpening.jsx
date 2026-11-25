@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 import WorkCover from './WorkCover.jsx';
@@ -21,6 +21,8 @@ function splitTitleLines(titulo = '') {
 export default function HeroOpening({
   obras,
   loading,
+  error,
+  onRetry,
   activeSlug,
   onChangeActiveSlug,
   onOpenObra,
@@ -30,7 +32,6 @@ export default function HeroOpening({
   const [direction, setDirection] = useState(1);
   const [switchId, setSwitchId] = useState(0);
   const [prevSlug, setPrevSlug] = useState(null);
-  const preloadedRef = useRef(false);
 
   const [playIntro] = useState(() => {
     if (typeof window === 'undefined') return false;
@@ -51,33 +52,24 @@ export default function HeroOpening({
 
   const flagshipObras = useMemo(
     () =>
-      FLAGSHIP_SLUGS.map((slug) => obras.find((o) => o.slug === slug)).filter(
-        Boolean
-      ),
+      FLAGSHIP_SLUGS.map((slug) => obras.find((obra) => obra.slug === slug)).filter(Boolean),
     [obras]
   );
 
-  const activeObra =
-    flagshipObras.find((o) => o.slug === activeSlug) || flagshipObras[0] || null;
+  const activeObra = flagshipObras.find((o) => o.slug === activeSlug);
   const prevObra = prevSlug
     ? flagshipObras.find((o) => o.slug === prevSlug) || null
     : null;
   const activeTheme = STAGE_THEMES[activeObra?.slug || activeSlug] || STAGE_THEMES.dr1;
 
   useEffect(() => {
-    if (preloadedRef.current || flagshipObras.length < 3) return;
-    preloadedRef.current = true;
-    const timer = window.setTimeout(() => {
-      flagshipObras.forEach((obra) => {
-        if (obra.slug !== activeSlug && obra.portada_url) {
-          const img = new Image();
-          img.referrerPolicy = 'no-referrer';
-          img.src = obra.portada_url;
-        }
-      });
-    }, 140);
-    return () => window.clearTimeout(timer);
-  }, [flagshipObras, activeSlug]);
+    for (const obra of flagshipObras) {
+      if (!obra.portada_url) continue;
+      const image = new Image();
+      image.referrerPolicy = 'no-referrer';
+      image.src = obra.portada_url;
+    }
+  }, [flagshipObras]);
 
   const handleSelectCase = (nextSlug) => {
     if (nextSlug === activeSlug) return;
@@ -236,8 +228,10 @@ export default function HeroOpening({
                   >
                     <WorkCover obra={activeObra} priority forceContain />
                   </button>
+                ) : loading ? (
+                  <div className="hero-artwork-skeleton" aria-busy="true" />
                 ) : (
-                  <div className="hero-artwork-skeleton" aria-busy={loading} />
+                  <WorkCover obra={{ titulo: activeTheme.shortName, slug: activeSlug, tipo: 'principal' }} />
                 )}
               </motion.div>
 
@@ -365,6 +359,13 @@ export default function HeroOpening({
                 {activeObra?.resumen ||
                   'Seleccioná una de las tres entregas principales para abrir su expediente sin spoilers.'}
               </motion.p>
+
+              {error && (
+                <div className="hero-data-error">
+                  <p role="alert">No pudimos cargar los expedientes.</p>
+                  <button type="button" className="btn-stage-primary" onClick={onRetry}>Reintentar</button>
+                </div>
+              )}
 
               {activeObra && (
                 <div className="hero-single-action">
