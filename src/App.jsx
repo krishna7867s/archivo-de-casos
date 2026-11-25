@@ -40,8 +40,10 @@ export default function App() {
 
   const [castObraSlug, setCastObraSlug] = useState('dr1');
   const [castBySlug, setCastBySlug] = useState({});
-  const [castLoading, setCastLoading] = useState(true);
-  const [castError, setCastError] = useState(null);
+  const [castStatus, setCastStatus] = useState(null);
+  const hasCast = Boolean(castBySlug[castObraSlug]);
+  const castError = !hasCast && castStatus?.slug === castObraSlug ? castStatus.error : null;
+  const castLoading = !hasCast && !castError;
 
   const [recomendaciones, setRecomendaciones] = useState([]);
   const [recsLoading, setRecsLoading] = useState(true);
@@ -69,6 +71,7 @@ export default function App() {
 
   // Tribunal opcional desde Recomendaciones
   const [miniTrialOpen, setMiniTrialOpen] = useState(false);
+  const closeMiniTrial = useCallback(() => setMiniTrialOpen(false), []);
 
   const savedScrollYRef = useRef(0);
   const lastTriggerElRef = useRef(null);
@@ -119,17 +122,16 @@ export default function App() {
   }, []);
 
   const loadCastForSlug = useCallback(async (slug) => {
-    setCastLoading(true);
-    setCastError(null);
+    setCastStatus({ slug, error: null });
     try {
       const rows = await fetchPersonajes(slug);
       setCastBySlug((prev) => ({ ...prev, [slug]: rows }));
       return rows;
     } catch (err) {
-      setCastError(err.message || 'No se pudo cargar el reparto.');
+      setCastStatus((current) => current?.slug === slug
+        ? { slug, error: err.message || 'No se pudo cargar el reparto.' }
+        : current);
       return null;
-    } finally {
-      setCastLoading(false);
     }
   }, []);
 
@@ -152,13 +154,8 @@ export default function App() {
   }, [loadObras, loadRecomendaciones]);
 
   useEffect(() => {
-    if (castBySlug[castObraSlug]) {
-      setCastLoading(false);
-      setCastError(null);
-      return;
-    }
-    loadCastForSlug(castObraSlug);
-  }, [castObraSlug, castBySlug, loadCastForSlug]);
+    if (!hasCast) loadCastForSlug(castObraSlug);
+  }, [castObraSlug, hasCast, loadCastForSlug]);
 
   const obrasConReparto = useMemo(() => {
     return CAST_GAME_SLUGS.map((slug) => obras.find((o) => o.slug === slug)).filter(
@@ -436,6 +433,7 @@ export default function App() {
 
                 {!castLoading && !castError && currentCastList.length > 0 && (
                   <EvidenceBoard
+                    key={castObraSlug}
                     personajes={currentCastList}
                     obraTitulo={currentCastObra?.titulo}
                     obraSlug={castObraSlug}
@@ -485,7 +483,7 @@ export default function App() {
         {miniTrialOpen && (
           <MiniTrialModal
             recomendaciones={recomendaciones}
-            onClose={() => setMiniTrialOpen(false)}
+            onClose={closeMiniTrial}
           />
         )}
       </div>

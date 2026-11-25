@@ -228,35 +228,27 @@ class ArchivoAudioEngine {
     osc.stop(now + 0.055);
   }
 
-  /** Pausa breve + golpe seco sincronizado con la salpicadura rosa */
+  /** Golpe seco al aparecer la salpicadura. */
   playContradictionHit() {
     if (!this.enabled) return;
     const ctx = this.ensureContext();
     if (!ctx || !this.masterGain) return;
 
-    // Pausa breve en la pista de tribunal antes del golpe
-    this.stopAllMusic();
+    const now = ctx.currentTime;
 
-    const hitTimer = window.setTimeout(() => {
-      if (!this.enabled || !this.ctx || !this.masterGain) return;
-      const now = this.ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(220, now);
+    osc.frequency.exponentialRampToValueAtTime(52, now + 0.24);
 
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(220, now);
-      osc.frequency.exponentialRampToValueAtTime(52, now + 0.24);
+    gain.gain.setValueAtTime(0.32, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
 
-      gain.gain.setValueAtTime(0.32, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
-
-      osc.connect(gain);
-      gain.connect(this.masterGain);
-      osc.start(now);
-      osc.stop(now + 0.3);
-    }, 120);
-
-    return hitTimer;
+    osc.connect(gain);
+    gain.connect(this.masterGain);
+    osc.start(now);
+    osc.stop(now + 0.3);
   }
 
   /** Aviso grave y corto para prueba incorrecta */

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowRight, ExternalLink, RotateCcw, X } from 'lucide-react';
 import { audioEngine } from '../lib/audioEngine.js';
@@ -11,8 +11,6 @@ const MINITRIAL_CASES = [
     beforeWeak: '«Para resolver un juicio basta con ',
     weakPhrase: 'votar por quien parezca sospechoso',
     afterWeak: '».',
-    splitLeft: '«Para resolver un juicio basta con',
-    splitRight: 'votar por quien parezca sospechoso».',
     hint: 'Volvé a leer la parte marcada: sin refutar una declaración con pruebas, la sospecha sola no resuelve el caso.',
     recommendedSlug: 'ace-attorney',
     connectionReason:
@@ -45,8 +43,6 @@ const MINITRIAL_CASES = [
     beforeWeak: '«En un juego mortal cada participante sobrevive ',
     weakPhrase: 'sin depender de las votaciones del grupo',
     afterWeak: '».',
-    splitLeft: '«En un juego mortal cada participante sobrevive',
-    splitRight: 'sin depender de las votaciones del grupo».',
     hint: 'Fijate en la frase marcada: la tensión nace justamente de las alianzas frágiles y los votos colectivos.',
     recommendedSlug: 'yttd',
     connectionReason:
@@ -79,8 +75,6 @@ const MINITRIAL_CASES = [
     beforeWeak: '«Un misterio de encierro siempre avanza por ',
     weakPhrase: 'un único camino lineal sin acertijos',
     afterWeak: '».',
-    splitLeft: '«Un misterio de encierro siempre avanza por',
-    splitRight: 'un único camino lineal sin acertijos».',
     hint: 'Revisá el tramo resaltado: las habitaciones de escape y las rutas alternativas reescriben la investigación.',
     recommendedSlug: 'zero-escape',
     connectionReason:
@@ -125,13 +119,8 @@ export default function MiniTrialModal({ recomendaciones, onClose }) {
     currentCase.evidences.find((e) => e.id === selectedEvidenceId) ||
     currentCase.evidences[0];
 
-  const matchedRec = useMemo(() => {
-    if (!recomendaciones || recomendaciones.length === 0) return null;
-    return (
-      recomendaciones.find((r) => r.slug === currentCase.recommendedSlug) ||
-      recomendaciones[0]
-    );
-  }, [recomendaciones, currentCase.recommendedSlug]);
+  const matchedRec = recomendaciones?.find((rec) => rec.slug === currentCase.recommendedSlug);
+  const impactContact = 170;
 
   const clearTimers = () => {
     timersRef.current.forEach((id) => window.clearTimeout(id));
@@ -185,17 +174,13 @@ export default function MiniTrialModal({ recomendaciones, onClose }) {
     }
 
     if (prefersReduced) {
+      audioEngine.stopAllMusic();
       audioEngine.playContradictionHit();
       setPhase('verdict');
       return;
     }
 
-    // Secuencia protagonista (~500ms):
-    // 0-120ms: bajan focos + pausa de audio + frase al centro
-    // 120-300ms: prueba cruza en diagonal + golpe de audio + salpicadura rosa + división en dos bloques
-    // 300-500ms: corte a «Contradicción encontrada» + recomendación desde Supabase
-    const audioTimer = audioEngine.playContradictionHit();
-    if (audioTimer) timersRef.current.push(audioTimer);
+    audioEngine.stopAllMusic();
 
     setPhase('impact');
     const tVerdict = window.setTimeout(() => {
@@ -280,82 +265,30 @@ export default function MiniTrialModal({ recomendaciones, onClose }) {
                 onDragLeave={() => setIsDraggingOver(false)}
                 onDrop={handleDropEvidence}
               >
-                {phase === 'impact' ? (
-                  <div className="minitrial-split-stage" aria-live="assertive">
-                    <motion.div
-                      className="minitrial-split-half is-left"
-                      initial={{ x: 0, y: 0, rotate: 0 }}
-                      animate={{ x: -26, y: -12, rotate: -2.4 }}
-                      transition={{
-                        delay: 0.14,
-                        duration: 0.22,
-                        ease: [0.16, 1, 0.3, 1],
-                      }}
-                    >
-                      {currentCase.splitLeft}
-                    </motion.div>
-                    <motion.div
-                      className="minitrial-split-half is-right"
-                      initial={{ x: 0, y: 0, rotate: 0 }}
-                      animate={{ x: 26, y: 14, rotate: 2.4 }}
-                      transition={{
-                        delay: 0.14,
-                        duration: 0.22,
-                        ease: [0.16, 1, 0.3, 1],
-                      }}
-                    >
-                      {currentCase.splitRight}
-                    </motion.div>
-
-                    <motion.div
-                      className="minitrial-flying-bullet"
-                      aria-hidden="true"
-                      initial={{ x: '-110%', y: '75%', rotate: -14, opacity: 1 }}
-                      animate={{ x: '115%', y: '-75%', rotate: -14, opacity: 1 }}
-                      transition={{
-                        delay: 0.11,
-                        duration: 0.2,
-                        ease: [0.22, 1, 0.36, 1],
-                      }}
-                    >
-                      {selectedEvidence.title}
-                    </motion.div>
-
-                    <motion.svg
-                      className="minitrial-splatter-svg"
-                      viewBox="0 0 260 180"
-                      aria-hidden="true"
-                      initial={{ scale: 0.2, opacity: 0, rotate: -12 }}
-                      animate={{ scale: 1.15, opacity: 1, rotate: 0 }}
-                      transition={{
-                        delay: 0.14,
-                        duration: 0.18,
-                        ease: [0.16, 1, 0.3, 1],
-                      }}
-                    >
-                      <path
-                        d="M128 90 L98 34 L126 68 L156 18 L142 74 L214 54 L154 96 L228 124 L148 112 L172 164 L126 120 L84 166 L106 112 L34 128 L98 92 L46 58 Z"
-                        fill="#ff1e7c"
-                      />
-                      <circle cx="40" cy="40" r="8" fill="#ff1e7c" />
-                      <circle cx="222" cy="42" r="6" fill="#ff1e7c" />
-                      <circle cx="212" cy="148" r="9" fill="#ff1e7c" />
-                      <circle cx="62" cy="148" r="5" fill="#ff1e7c" />
-                    </motion.svg>
-                  </div>
-                ) : (
-                  <blockquote className="minitrial-quote">
-                    <span>{currentCase.beforeWeak}</span>
-                    <mark
-                      className={`minitrial-weak-phrase ${
-                        phase === 'wrong' ? 'is-highlighted' : ''
-                      }`}
-                    >
-                      {currentCase.weakPhrase}
-                    </mark>
-                    <span>{currentCase.afterWeak}</span>
-                  </blockquote>
-                )}
+                <blockquote key={caseIndex} className="minitrial-quote">
+                  <span>{currentCase.beforeWeak}</span>
+                  <mark className={`minitrial-weak-phrase ${phase === 'wrong' ? 'is-highlighted' : ''}`}>
+                    {currentCase.weakPhrase}
+                    {phase === 'impact' && (
+                      <span className="minitrial-contact" style={{ '--contact-time': `${impactContact}ms` }} aria-hidden="true">
+                        <span className="minitrial-flying-bullet">{selectedEvidence.title}</span>
+                        <svg
+                          className="minitrial-splatter-svg"
+                          viewBox="0 0 260 180"
+                          onAnimationStart={(event) => {
+                            if (event.animationName === 'phrase-contact') audioEngine.playContradictionHit();
+                          }}
+                        >
+                          <path d="M128 90 L98 34 L126 68 L156 18 L142 74 L214 54 L154 96 L228 124 L148 112 L172 164 L126 120 L84 166 L106 112 L34 128 L98 92 L46 58 Z" fill="#ff1e7c" />
+                          <circle cx="40" cy="40" r="8" fill="#ff1e7c" />
+                          <circle cx="222" cy="42" r="6" fill="#ff1e7c" />
+                          <circle cx="212" cy="148" r="9" fill="#ff1e7c" />
+                        </svg>
+                      </span>
+                    )}
+                  </mark>
+                  <span>{currentCase.afterWeak}</span>
+                </blockquote>
 
                 {phase === 'wrong' && (
                   <div className="minitrial-wrong-feedback" role="alert">
@@ -423,14 +356,18 @@ export default function MiniTrialModal({ recomendaciones, onClose }) {
           ) : (
             <motion.div
               className="minitrial-verdict-screen"
+              aria-labelledby="minitrial-heading"
               aria-live="polite"
               initial={prefersReduced ? { opacity: 1 } : { opacity: 0, scale: 0.97 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: prefersReduced ? 0 : 0.22, ease: [0.16, 1, 0.3, 1] }}
             >
               <div className="minitrial-verdict-banner">
-                <span>CONTRADICCIÓN ENCONTRADA</span>
+                <span id="minitrial-heading">CONTRADICCIÓN ENCONTRADA</span>
               </div>
+
+              <p className="minitrial-resolved-phrase">Frase contradicha <mark>{currentCase.weakPhrase}</mark></p>
+              {!matchedRec && <p role="status">La recomendación de este testimonio todavía no está disponible.</p>}
 
               {matchedRec && (
                 <div className="minitrial-verdict-card">
@@ -465,16 +402,7 @@ export default function MiniTrialModal({ recomendaciones, onClose }) {
                         <ExternalLink size={15} aria-hidden="true" />
                       </a>
                     )}
-                    <button
-                      type="button"
-                      className="btn-secondary-dark"
-                      onClick={() =>
-                        selectCase((caseIndex + 1) % MINITRIAL_CASES.length)
-                      }
-                    >
-                      <RotateCcw size={15} aria-hidden="true" />
-                      <span>Probar otro testimonio</span>
-                    </button>
+
                     <button
                       type="button"
                       className="btn-secondary-dark"
@@ -485,6 +413,14 @@ export default function MiniTrialModal({ recomendaciones, onClose }) {
                   </div>
                 </div>
               )}
+              <button
+                type="button"
+                className="btn-secondary-dark"
+                onClick={() => selectCase((caseIndex + 1) % MINITRIAL_CASES.length)}
+              >
+                <RotateCcw size={15} aria-hidden="true" />
+                <span>Probar otro testimonio</span>
+              </button>
             </motion.div>
           )}
         </div>

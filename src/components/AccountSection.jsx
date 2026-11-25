@@ -218,7 +218,10 @@ export default function AccountSection() {
         <div className="vault-columns">
           <div className="vault-identity">
             <div className={`vault-badge ${reveal ? 'is-revealing' : ''}`} onAnimationEnd={(e) => {
-              if (e.animationName === 'vault-credential') audioEngine.playSelectClick();
+              if (e.animationName === 'vault-credential') {
+                audioEngine.playSelectClick();
+                setReveal(false);
+              }
             }}>
               <div className="vault-badge-band">
                 <span>Credencial de la Academia</span>

@@ -12,10 +12,35 @@ function getMonogram(nombre = '') {
   return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
 }
 
-function Portrait({ url, name, className }) {
+function Portrait({ url, name, className, featured = false }) {
   const [failed, setFailed] = useState(false);
+  const [cutout, setCutout] = useState(false);
+
+  useEffect(() => {
+    if (!featured || !url || failed) return;
+    const probe = new Image();
+    probe.crossOrigin = 'anonymous';
+    probe.referrerPolicy = 'no-referrer';
+    probe.onload = () => {
+      if (probe.naturalWidth < 320 || probe.naturalHeight < 420) return;
+      const canvas = document.createElement('canvas');
+      canvas.width = canvas.height = 24;
+      const context = canvas.getContext('2d');
+      if (!context) return;
+      context.drawImage(probe, 0, 0, 24, 24);
+      const pixels = context.getImageData(0, 0, 24, 24).data;
+      let transparent = 0;
+      for (let i = 3; i < pixels.length; i += 4) {
+        if (pixels[i] < 64) transparent++;
+      }
+      setCutout(transparent >= 58);
+    };
+    probe.src = url;
+    return () => { probe.onload = null; };
+  }, [featured, url, failed]);
+
   return url && !failed
-    ? <img className={className} src={url} alt="" loading="lazy" referrerPolicy="no-referrer" onError={() => setFailed(true)} />
+    ? <img className={`${className}${cutout ? ' is-cutout' : ''}`} src={url} alt="" loading={featured ? 'eager' : 'lazy'} referrerPolicy="no-referrer" onError={() => setFailed(true)} />
     : <span className={className}>{getMonogram(name)}</span>;
 }
 
@@ -50,8 +75,8 @@ export default function EvidenceBoard({
   const activePerson = useMemo(() => {
     if (filteredPersonajes.length === 0) return null;
     const found = filteredPersonajes.find((p) => p.nombre === selectedName);
-    return found || filteredPersonajes[0];
-  }, [filteredPersonajes, selectedName]);
+    return found || (!query && obraSlug === 'dr1' && filteredPersonajes.find((p) => p.nombre === 'Yasuhiro Hagakure')) || filteredPersonajes[0];
+  }, [filteredPersonajes, selectedName, query, obraSlug]);
 
   const activeIndex = activePerson
     ? filteredPersonajes.findIndex((p) => p.nombre === activePerson.nombre)
@@ -60,14 +85,15 @@ export default function EvidenceBoard({
   useEffect(() => {
     if (!activePerson) return;
     const chipEl = mobileChipRefs.current[activePerson.nombre];
-    if (chipEl && typeof chipEl.scrollIntoView === 'function') {
-      chipEl.scrollIntoView({
-        behavior: prefersReduced ? 'auto' : 'smooth',
-        inline: 'nearest',
-        block: 'nearest',
-      });
+    const rail = chipEl?.parentElement;
+    if (rail?.clientWidth) {
+      const chip = chipEl.getBoundingClientRect();
+      const viewport = rail.getBoundingClientRect();
+      if (chip.left < viewport.left || chip.right > viewport.right) {
+        rail.scrollBy({ left: chip.left - viewport.left, behavior: 'instant' });
+      }
     }
-  }, [activePerson, prefersReduced]);
+  }, [activePerson]);
 
   const handleSelect = (persona) => {
     if (activePerson && persona.nombre === activePerson.nombre) return;
@@ -159,7 +185,7 @@ export default function EvidenceBoard({
             {/* Ficha protagonista estilo Report Card escolar de Danganronpa */}
             {activePerson && (
               <article
-                className="cast-protagonist-card report-card-shell"
+                className="cast-protagonist-card report-card-shell" style={{ '--portrait-accent': themeAccent }}
                 aria-live="polite"
                 aria-label="Personaje seleccionado"
               >
@@ -182,54 +208,29 @@ export default function EvidenceBoard({
                   </span>
                 </div>
 
-                <div key={`report-${activePerson.obra_slug}-${activePerson.nombre}`} className={`report-card-body ${sweepTick > 0 ? 'is-updated' : ''}`}>
-                  <div className="cast-protagonist-top">
-                    <div className="cast-portrait-wrap" aria-hidden="true">
-                      <svg className="cast-portrait-splatter" viewBox="0 0 80 80">
-                        <path
-                          d="M52 8 C66 12 76 28 70 44 C65 56 72 68 58 72 C44 76 34 62 20 66 C8 70 4 50 12 36 C18 24 34 4 52 8 Z"
-                          fill="#ff0a78"
-                          fillOpacity="0.9"
-                        />
-                      </svg>
-                      <div className="cast-monogram-box">
-                        <span className="cast-monogram-slash" />
-                        <span className="cast-monogram-letters">
-                          <Portrait key={activePerson.retrato_url} url={activePerson.retrato_url} name={activePerson.nombre} className="cast-portrait-image" />
-                        </span>
-                        <span className="cast-monogram-num mono">
-                          #{String(activeIndex + 1).padStart(2, '0')}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="cast-protagonist-id">
-                      <span className="cast-game-label mono">
-                        {obraTitulo || activePerson.obra_slug?.toUpperCase()}
-                      </span>
-                      <h3 className="cast-protagonist-name">
-                        {activePerson.nombre}
-                      </h3>
-                    </div>
+                <div className="report-card-body">
+                  <div className="cast-featured-art" aria-hidden="true">
+                    <Portrait
+                      key={activePerson.retrato_url || activePerson.nombre}
+                      url={activePerson.retrato_url}
+                      name={activePerson.nombre}
+                      className="cast-portrait-image"
+                      featured
+                    />
                   </div>
-
-                  {/* Filas tabulares inspiradas en el Report Card oficial */}
-                  <dl className="report-card-table">
-                    <div className="report-row">
-                      <dt>Talento</dt>
-                      <dd>
-                        {activePerson.talento || 'Sin talento registrado en el archivo'}
-                      </dd>
-                    </div>
-                    <div className="report-row">
-                      <dt>Entrega</dt>
-                      <dd>{obraTitulo || activePerson.obra_slug?.toUpperCase()}</dd>
-                    </div>
-                    <div className="report-row">
-                      <dt>Registro</dt>
-                      <dd className="mono">SIN SPOILERS · ARCHIVO VERIFICADO</dd>
-                    </div>
-                  </dl>
+                  <div className="cast-featured-caption">
+                    <span className="cast-game-label mono">{obraTitulo || activePerson.obra_slug?.toUpperCase()}</span>
+                    <h3 className="cast-protagonist-name">{activePerson.nombre}</h3>
+                    <dl className="cast-talent">
+                      <dt className="mono">Talento definitivo</dt>
+                      <dd>{activePerson.talento || 'Sin talento registrado'}</dd>
+                    </dl>
+                    {activePerson.retrato_fuente_url && (
+                      <a className="cast-portrait-credit" href={activePerson.retrato_fuente_url} target="_blank" rel="noreferrer">
+                        Fuente del retrato
+                      </a>
+                    )}
+                  </div>
                 </div>
 
                 <div className="report-card-checker-foot" aria-hidden="true" />

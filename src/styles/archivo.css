@@ -3322,3 +3322,194 @@ img.cast-roster-image { width: 100%; height: 100%; object-fit: cover; object-pos
   from { opacity: .55; transform: translateX(.75rem) rotate(-1deg); }
   to { opacity: 1; transform: translateX(0) rotate(0); }
 }
+
+/* Cada entrega conserva su propio montaje y su escala de imagen. */
+.stage-theme-dr1 .hero-center-grid { align-items: center; }
+.stage-theme-dr1 .hero-artwork-column::before { background: #45647b; }
+.stage-theme-dr1 .env-dr1-tiles {
+  background-image:
+    radial-gradient(ellipse at 26% 10%, #71b8e54d, transparent 55%),
+    linear-gradient(12deg, transparent 47%, #9cd0ef36 48% 49%, transparent 50%),
+    repeating-linear-gradient(90deg, transparent 0 4.8rem, #89c2e722 4.8rem 4.9rem);
+  background-size: auto;
+}
+
+.stage-theme-dr2 .hero-center-grid {
+  grid-template-columns: minmax(0, .95fr) minmax(0, 1.55fr);
+}
+.stage-theme-dr2 .hero-copy-slot { grid-column: 1; grid-row: 1; }
+.stage-theme-dr2 .hero-artwork-column { grid-column: 2; grid-row: 1; }
+.stage-theme-dr2 .hero-artwork-column::before { background: #367f78; transform: rotate(1.4deg); }
+.stage-theme-dr2 .hero-artwork-slot { aspect-ratio: 2 / 1; }
+.stage-theme-dr2 .hero-copy-block { border-left-color: #2a9a8e; }
+
+.stage-theme-v3 .hero-center-grid { grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr); }
+.stage-theme-v3 .hero-artwork-slot { aspect-ratio: 3 / 2; }
+.stage-theme-v3 .hero-copy-slot { align-self: end; padding-bottom: 2rem; }
+.stage-theme-v3 .hero-artwork-column::before { background: #9458bd; transform: rotate(-2.2deg); }
+
+.cast-protagonist-card {
+  --report-paper: #f0e5d5;
+  background: #20112c;
+}
+
+.cast-protagonist-card .report-card-bar {
+  position: relative;
+  z-index: 1;
+}
+
+.cast-protagonist-card .report-card-body {
+  padding: 0;
+  gap: 0;
+}
+
+.cast-featured-art {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  place-items: end center;
+  height: clamp(13rem, 29vw, 24rem);
+  background:
+    repeating-linear-gradient(135deg, transparent 0 20px, #cf96ef12 20px 21px),
+    radial-gradient(ellipse at 55% 50%, #68487b, #271434 68%);
+}
+
+.cast-featured-art::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 13% 16% 9%;
+  border: 2px solid var(--portrait-accent);
+  background: #140c1b;
+  transform: rotate(-5deg);
+}
+
+.cast-featured-art:has(.is-cutout)::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 18% 10% 9%;
+  background: #ee3d8a;
+  clip-path: polygon(10% 38%, 38% 30%, 27% 0, 63% 23%, 87% 9%, 77% 44%, 100% 56%, 81% 66%, 88% 94%, 55% 79%, 22% 100%, 27% 71%, 0 75%, 15% 55%);
+}
+
+.cast-featured-art > img.cast-portrait-image {
+  width: 63%;
+  height: 78%;
+  min-height: 0;
+  object-fit: cover;
+  object-position: center 22%;
+  align-self: center;
+  border: 4px solid #e5d1e3;
+  box-shadow: 4px 4px #170d20;
+}
+
+.cast-featured-art > img.is-cutout {
+  width: 93%;
+  height: calc(100% + 1rem);
+  align-self: end;
+  object-fit: contain;
+  object-position: center bottom;
+  border: 0;
+  box-shadow: none;
+  filter: drop-shadow(6px 6px #1b0c26a8);
+}
+
+.cast-featured-art > span {
+  align-self: center;
+  color: #f0e5d5;
+  font: 800 clamp(4rem, 10vw, 8rem) / 1 var(--font-display);
+}
+
+.cast-featured-caption {
+  position: relative;
+  padding: .9rem 1rem 1.05rem;
+  background: var(--report-paper);
+  color: #261528;
+  border-left: 5px solid #ef438b;
+}
+
+.cast-featured-caption .cast-game-label,
+.cast-portrait-credit { color: #78304f; }
+
+.cast-featured-caption .cast-protagonist-name {
+  margin: .2rem 0 .65rem;
+  font-size: clamp(2rem, 4vw, 3.35rem);
+  color: #261528;
+  letter-spacing: -.015em;
+  overflow-wrap: anywhere;
+}
+
+.cast-talent { margin: 0; }
+.cast-talent dt { font-size: .72rem; color: #73304c; }
+.cast-talent dd { margin: .18rem 0 .35rem; font-weight: 700; }
+.cast-portrait-credit { display: inline-block; font-size: .8rem; }
+.cast-diagonal-sweep { background: linear-gradient(90deg, transparent, #ff5ba46b 65%, #ffd2e6 97%, transparent); }
+
+.is-compact-cast .cast-featured-art { height: clamp(11rem, 22vw, 18rem); }
+
+@media (max-width: 900px) {
+  .hero-stage-section .hero-center-grid { grid-template-columns: 1fr; }
+  .hero-stage-section .hero-artwork-column,
+  .hero-stage-section .hero-copy-slot { grid-column: auto; grid-row: auto; }
+  .stage-theme-v3 .hero-copy-slot { padding-bottom: 0; }
+}
+
+@media (max-width: 640px) {
+  .cast-featured-art { height: clamp(13rem, 61vw, 19rem); }
+}
+
+.minitrial-weak-phrase { position: relative; display: inline-block; max-width: 100%; }
+.minitrial-contact {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.minitrial-contact .minitrial-flying-bullet,
+.minitrial-contact .minitrial-splatter-svg {
+  top: 50%;
+  left: 50%;
+}
+
+.minitrial-contact .minitrial-flying-bullet {
+  max-width: min(53vw, 17rem);
+  white-space: normal;
+  line-height: 1;
+  color: #1b1022;
+  animation: evidence-cross calc(var(--contact-time) * 2) linear both;
+}
+
+.minitrial-contact .minitrial-splatter-svg {
+  width: clamp(7rem, 21vw, 13rem);
+  height: auto;
+  animation: phrase-contact 250ms var(--contact-time) cubic-bezier(.2,.8,.3,1) both;
+}
+
+.minitrial-resolved-phrase { margin: 0; }
+.minitrial-resolved-phrase mark { background: #ff9ac3; color: #1c1024; padding-inline: .25em; }
+.minitrial-verdict-screen > button { justify-self: start; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .minitrial-quote { animation: verdict-reveal 180ms ease-out both; }
+  .vault-badge.is-revealing .vault-talent { animation: talent-stamp 175ms 430ms ease-out both; }
+}
+
+@keyframes evidence-cross {
+  0% { transform: translate(-140%, 70%) rotate(-16deg); opacity: 0; }
+  25% { opacity: 1; }
+  50% { transform: translate(-50%, -50%) rotate(-16deg); opacity: 1; }
+  100% { transform: translate(40%, -170%) rotate(-16deg); opacity: 0; }
+}
+
+@keyframes phrase-contact {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(.25) rotate(-13deg); }
+  35% { opacity: .88; }
+  100% { opacity: .47; transform: translate(-50%, -50%) scale(1.2) rotate(0); }
+}
+
+@keyframes talent-stamp {
+  0% { opacity: 0; transform: scale(1.22) rotate(-6deg); }
+  65% { opacity: 1; transform: scale(.96) rotate(2deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0); }
+}
