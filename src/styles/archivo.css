@@ -3787,3 +3787,130 @@ img.cast-roster-image { width: 100%; height: 100%; object-fit: cover; object-pos
 @media (prefers-reduced-motion: reduce) {
   .minitrial-shell[data-plane='impacto'] .minitrial-testimony-stage { transform: none; }
 }
+
+.case-trial {
+  width: min(44rem, calc(100% - 2rem));
+  max-height: calc(100dvh - 2rem);
+  padding: clamp(0.85rem, 3vw, 1.75rem);
+  color: #faf0f7;
+  background: #1b111c;
+  border: 1px solid #a8356a;
+  border-radius: 1rem;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.case-trial::backdrop {
+  background: rgb(8 4 10 / 85%);
+}
+
+.case-trial-header, .case-trial-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.case-trial-header {
+  justify-content: space-between;
+}
+
+.case-trial-list {
+  display: grid;
+  gap: 0.75rem;
+  list-style: none;
+  padding: 0;
+}
+
+.case-trial-statement {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 0.75rem;
+  margin: 1rem 0;
+  background: #321831;
+  border-left: 3px solid #ff579f;
+}
+
+.case-trial-statement blockquote {
+  margin: 0.25rem 0 0;
+}
+
+.case-trial mark {
+  background: transparent;
+  color: #ffb9da;
+  text-decoration: underline;
+}
+
+.case-trial mark.is-solved {
+  color: #1b111c;
+  background: #ff86bf;
+  text-decoration: none;
+}
+
+.case-trial-evidence {
+  display: grid;
+  gap: 0.55rem;
+  padding: 0;
+  border: 0;
+  min-inline-size: 0;
+}
+
+.case-trial-evidence label {
+  display: flex;
+  gap: 0.65rem;
+  align-items: flex-start;
+  padding: 0.75rem;
+  background: #241825;
+  border: 1px solid #785772;
+  border-radius: 0.55rem;
+  cursor: pointer;
+  scroll-margin-top: 9rem;
+}
+
+.case-trial-evidence input {
+  accent-color: #ff70ad;
+  margin-top: 0.3em;
+}
+
+.case-trial-evidence .is-selected {
+  background: #431d36;
+  border-color: #ff70ad;
+}
+
+.case-trial-evidence label:focus-within,
+.case-trial button:focus-visible {
+  outline: 2px solid #ffabd3;
+  outline-offset: 2px;
+}
+
+.case-trial button {
+  min-height: 44px;
+}
+
+.case-trial-hint {
+  color: #ffb9da;
+  margin-block: 0.75rem;
+}
+
+.case-trial-result {
+  padding: 0.75rem 1rem;
+  background: #431d36;
+  border: 1px solid #ff70ad;
+  border-radius: 0.55rem;
+}
+
+.case-trial-result h3 {
+  scroll-margin-top: 9rem;
+}
+
+.case-trial-actions {
+  margin-top: 1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .case-trial *, .case-trial *::before, .case-trial *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

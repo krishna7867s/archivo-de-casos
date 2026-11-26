@@ -515,10 +515,7 @@ export default function App() {
         </AnimatePresence>
 
         {miniTrialOpen && (
-          <MiniTrialModal
-            recomendaciones={recomendaciones}
-            onClose={closeMiniTrial}
-          />
+          <MiniTrialModal onClose={closeMiniTrial} />
         )}
       </div>
     </LayoutGroup>

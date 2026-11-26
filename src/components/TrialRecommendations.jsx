@@ -70,7 +70,7 @@ export default function TrialRecommendations({
             </h2>
             <p className="section-subtitle">
               Elegí qué tensión de Danganronpa querés volver a sentir o entrá al
-              minijuicio para descubrir un título presentando una contradicción.
+              minijuicio para resolver un caso original sin spoilers.
             </p>
           </div>
 
@@ -78,7 +78,6 @@ export default function TrialRecommendations({
             type="button"
             className="btn-minitrial-launch"
             onClick={onOpenMiniTrial}
-            disabled={loading || !!error}
           >
             <Gavel size={17} aria-hidden="true" />
             <span>Entrar al tribunal</span>
