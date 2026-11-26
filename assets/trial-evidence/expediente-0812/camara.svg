@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="420" viewBox="0 0 760 420" role="img" aria-label="Fotograma del vestíbulo">
+  <rect width="760" height="420" rx="18" fill="#1b2638"/>
+  <rect width="760" height="85" rx="18" fill="#101929"/>
+  <text x="35" y="54" font-family="system-ui,sans-serif" font-size="29" font-weight="700" fill="#e2edf9">Fotograma del vestíbulo</text>
+  <text x="35" y="131" font-family="monospace" font-size="22" fill="#ffa3c8">12 MAY · 08:12:04 · CÁMARA 02</text>
+  <text x="35" y="179" font-family="monospace" font-size="22" fill="#e2edf9">ENTRADA ARCHIVO</text>
+  <text x="35" y="227" font-family="monospace" font-size="22" fill="#e2edf9">Makoto Naegi · lado interior · AP-04</text>
+  <g color="#e2edf9"><path d="M90 390V265h282v125 M410 390V265h260v125" fill="#292d3b" stroke="#5e667a" stroke-width="4"/><circle cx="465" cy="303" r="22" fill="#b4a8a6"/><path d="M422 390v-23c0-49 88-49 88 0v23" fill="#697281"/><rect x="507" y="351" width="70" height="26" fill="#ffcd65"/><text x="514" y="369" font-size="15" font-family="monospace">AP-04</text></g>
+  <text x="35" y="404" fill="#ffa3c8" font-family="monospace" font-size="13">RECREACIÓN PARA EL EXPEDIENTE FICTICIO</text>
+</svg>

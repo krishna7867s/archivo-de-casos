@@ -515,7 +515,7 @@ export default function App() {
         </AnimatePresence>
 
         {miniTrialOpen && (
-          <MiniTrialModal onClose={closeMiniTrial} />
+          <MiniTrialModal onClose={closeMiniTrial} cast={castBySlug.dr1} />
         )}
       </div>
     </LayoutGroup>

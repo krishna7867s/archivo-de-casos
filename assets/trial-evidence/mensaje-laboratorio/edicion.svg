@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="420" viewBox="0 0 760 420" role="img" aria-label="Registro de edición">
+  <rect width="760" height="420" rx="18" fill="#1b2638"/>
+  <rect width="760" height="85" rx="18" fill="#101929"/>
+  <text x="35" y="54" font-family="system-ui,sans-serif" font-size="29" font-weight="700" fill="#e2edf9">Registro de edición</text>
+  <text x="35" y="131" font-family="monospace" font-size="22" fill="#ffa3c8">24 MAY · TERMINAL L-02 · M-47</text>
+  <text x="35" y="179" font-family="monospace" font-size="22" fill="#e2edf9">21:31 · borrador v1</text>
+  <text x="35" y="227" font-family="monospace" font-size="22" fill="#e2edf9">21:36 · v3 guardada: Revisen el sensor B</text>
+  <g color="#e2edf9"><path d="M65 284h630m-630 32h630m-630 32h400" stroke="currentColor" opacity=".24" stroke-width="4"/></g>
+  <text x="35" y="404" fill="#ffa3c8" font-family="monospace" font-size="13">RECREACIÓN PARA EL EXPEDIENTE FICTICIO</text>
+</svg>

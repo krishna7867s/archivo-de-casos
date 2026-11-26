@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="420" viewBox="0 0 760 420" role="img" aria-label="Foto del sello">
+  <rect width="760" height="420" rx="18" fill="#f3e8d7"/>
+  <rect width="760" height="85" rx="18" fill="#e1d0ba"/>
+  <text x="35" y="54" font-family="system-ui,sans-serif" font-size="29" font-weight="700" fill="#332436">Foto del sello</text>
+  <text x="35" y="131" font-family="monospace" font-size="22" fill="#972658">18 MAY · 16:25 · ANTES DE ABRIR</text>
+  <text x="35" y="179" font-family="monospace" font-size="22" fill="#332436">S-44 · banda continua e intacta</text>
+  <text x="35" y="227" font-family="monospace" font-size="22" fill="#332436">Etiqueta visible: G-18</text>
+  <g color="#332436"><path d="M200 271h360v103H200z" fill="#ad794b"/><path d="M210 323h340" stroke="#f5cb68" stroke-width="27"/><text x="350" y="330" font-size="22" font-family="monospace" fill="#2d1a1c">S-44</text></g>
+  <text x="35" y="404" fill="#972658" font-family="monospace" font-size="13">RECREACIÓN PARA EL EXPEDIENTE FICTICIO</text>
+</svg>

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="420" viewBox="0 0 760 420" role="img" aria-label="Plano del pasillo">
+  <rect width="760" height="420" rx="18" fill="#f3e8d7"/>
+  <rect width="760" height="85" rx="18" fill="#e1d0ba"/>
+  <text x="35" y="54" font-family="system-ui,sans-serif" font-size="29" font-weight="700" fill="#332436">Plano del pasillo</text>
+  <text x="35" y="131" font-family="monospace" font-size="22" fill="#972658">CONTROL → PASILLO → ARCHIVO</text>
+  <text x="35" y="179" font-family="monospace" font-size="22" fill="#332436">Única entrada: puerta con lector</text>
+  <text x="35" y="227" font-family="monospace" font-size="22" fill="#332436">Cámara del vestíbulo → umbral</text>
+  <g color="#332436"><path d="M65 330h180v-87h205v87h245 M65 375h225v-86h115v86h290" fill="none" stroke="#5582a8" stroke-width="8"/><path d="M120 351h100m85-84h80m90 85h150" fill="none" stroke="#ba3974" stroke-width="7" stroke-dasharray="12 8"/></g>
+  <text x="35" y="404" fill="#972658" font-family="monospace" font-size="13">RECREACIÓN PARA EL EXPEDIENTE FICTICIO</text>
+</svg>

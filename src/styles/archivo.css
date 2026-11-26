@@ -3914,3 +3914,119 @@ img.cast-roster-image { width: 100%; height: 100%; object-fit: cover; object-pos
     transition: none !important;
   }
 }
+
+.case-trial-fan {
+  color: #ffb9da;
+}
+
+.case-trial-statement {
+  width: 100%;
+  min-inline-size: 0;
+  border: 1px solid #785772;
+  border-left: 3px solid #ff579f;
+}
+
+.case-trial-statement legend {
+  padding-inline: 0.35rem;
+  background: #321831;
+  font-weight: 700;
+}
+
+.case-trial-statement label, .case-evidence-controls label {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 44px;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+}
+
+.case-trial-statement label.is-selected, .case-evidence-grid article.is-selected {
+  background: #431d36;
+  border-color: #ff70ad;
+}
+
+.case-trial input[type='radio'] {
+  accent-color: #ff70ad;
+  flex: 0 0 auto;
+}
+
+.case-trial label:focus-within {
+  outline: 2px solid #ffabd3;
+  outline-offset: 2px;
+}
+
+.case-evidence-grid, .case-contradiction {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.case-evidence-grid {
+  margin-block: 0.85rem;
+}
+
+.case-evidence-grid article {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 0.65rem;
+  background: #241825;
+  border: 1px solid #785772;
+  border-radius: 0.55rem;
+  scroll-margin-top: 12rem;
+}
+
+.case-evidence-grid h4, .case-evidence-grid p {
+  margin: 0;
+}
+
+.case-evidence-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 0.4rem;
+}
+
+.case-evidence-controls {
+  display: flex;
+  gap: 0.35rem;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-top: auto;
+}
+
+.case-evidence-zoom {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.case-evidence-zoom button {
+  justify-self: start;
+}
+
+.case-contradiction > * {
+  margin: 0;
+  padding: 0.65rem;
+  background: #241825;
+  border-radius: 0.55rem;
+  overflow-wrap: anywhere;
+}
+
+.case-contradiction figcaption {
+  margin-top: 0.5rem;
+}
+
+.case-trial-verdict {
+  border-width: 2px;
+  box-shadow: 0 0 1.5rem rgb(255 87 159 / 35%);
+}
+
+@media (max-width: 36rem) {
+  .case-evidence-grid { grid-template-columns: 1fr; }
+  .case-trial-statement { font-size: 0.9rem; }
+}
+
+@media (max-height: 31rem) {
+  .case-trial-statement { position: static; }
+}

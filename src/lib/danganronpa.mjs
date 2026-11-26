@@ -96,3 +96,24 @@ export async function fetchRecomendaciones() {
     order: 'posicion.asc',
   });
 }
+
+export function fetchTrialEvidence(caseId) {
+  return queryTable('danganronpa_pruebas_juicio', {
+    select: 'prueba_id,titulo,ruta,descripcion,imagen_alt,orden',
+    caso_id: `eq.${caseId}`,
+    publicado: 'eq.true',
+    order: 'orden.asc',
+  });
+}
+
+export async function fetchTrialImage(path, signal) {
+  const key = path.split('/').map(encodeURIComponent).join('/');
+  const response = await fetch(`${SUPABASE_URL}/storage/v1/object/authenticated/trial-evidence/${key}`, {
+    headers: { apikey: SUPABASE_PUBLISHABLE_KEY },
+    signal: AbortSignal.any([signal, AbortSignal.timeout(10000)]),
+  });
+  if (!response.ok || !response.headers.get('content-type')?.startsWith('image/svg+xml')) {
+    throw new Error('No se pudo cargar la imagen de la prueba.');
+  }
+  return response.blob();
+}
